@@ -525,40 +525,13 @@
   </div>
 </div>
 
-<!-- MODAL TREINAMENTO -->
-<div class="modal-overlay" id="trainingModal">
-  <div class="modal">
-    <button class="modal-close" onclick="closeTrainingModal()">✕</button>
-    <div style="text-align:center;padding:1rem 0">
-      <div style="font-size:2.5rem;margin-bottom:1rem">🎓</div>
-      <h3 id="trainingModalTitle" style="font-family:'Syne',sans-serif;font-size:1.25rem;font-weight:800;margin-bottom:0.5rem"></h3>
-      <p style="color:var(--muted);font-size:0.85rem;margin-bottom:1.5rem">Deixe seu e-mail para receber o acesso gratuito ao treinamento.</p>
-      <div class="form-group" style="text-align:left">
-        <label>Seu melhor e-mail</label>
-        <input type="email" placeholder="seu@email.com" id="trainingEmail">
-      </div>
-      <button class="btn-primary" style="width:100%;margin-top:0.5rem" onclick="confirmTraining()">🚀 Quero Acesso Gratuito</button>
-      <p style="margin-top:0.75rem;font-size:0.73rem;color:var(--muted)">Sem spam. Cancele quando quiser.</p>
-    </div>
-  </div>
-</div>
+
 
 <script>
-  let currentTraining = '';
   function openTraining(name) {
-    currentTraining = name;
-    document.getElementById('trainingModalTitle').textContent = name;
-    document.getElementById('trainingModal').classList.add('active');
+    const msg = encodeURIComponent('Olá! Vim pelo site Planeta Digital e quero acesso ao treinamento: ' + name);
+    window.open('https://wa.me/553128880350?text=' + msg, '_blank');
   }
-  function closeTrainingModal() { document.getElementById('trainingModal').classList.remove('active'); }
-  function confirmTraining() {
-    const email = document.getElementById('trainingEmail').value;
-    if (!email || !email.includes('@')) { alert('Por favor, informe um e-mail válido.'); return; }
-    document.getElementById('trainingModal').classList.remove('active');
-    alert('🎓 Pronto! O acesso ao treinamento "'+currentTraining+'" foi enviado para '+email+'.\n\nVerifique sua caixa de entrada!');
-    document.getElementById('trainingEmail').value = '';
-  }
-  document.getElementById('trainingModal').addEventListener('click',function(e){if(e.target===this)closeTrainingModal();});
   document.getElementById('ebookModal').addEventListener('click',function(e){if(e.target===this)e.target.classList.remove('active');});
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => { if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target);} });
