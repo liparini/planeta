@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Treinamentos — Planeta Digital</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #060910;
+  --surface: #0d1117;
+  --surface2: #131b24;
+  --surface3: #1a2332;
+  --accent: #00e5ff;
+  --accent2: #7c3aed;
+  --accent3: #10b981;
+  --warn: #f59e0b;
+  --text: #e2e8f0;
+  --muted: #64748b;
+  --border: rgba(0,229,255,0.12);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; }
+body::before { content:''; position:fixed; inset:0; background-image:linear-gradient(rgba(0,229,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.025) 1px,transparent 1px); background-size:40px 40px; pointer-events:none; z-index:0; }
+
+/* NAV */
+nav { position:fixed; top:0; left:0; right:0; z-index:200; background:rgba(6,9,16,0.9); backdrop-filter:blur(14px); border-bottom:1px solid var(--border); height:58px; display:flex; align-items:center; justify-content:space-between; padding:0 2rem; }
+.logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.2rem; color:var(--accent); cursor:pointer; }
+.logo span { color:var(--text); }
+.nav-right { display:flex; align-items:center; gap:1rem; }
+.user-badge { display:none; align-items:center; gap:0.5rem; background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.25); border-radius:100px; padding:0.3rem 0.9rem; font-size:0.8rem; color:var(--accent3); font-weight:600; }
+.user-badge.visible { display:flex; }
+
+/* SCREENS */
+.screen { display:none; position:relative; z-index:1; }
+.screen.active { display:block; }
+
+/* ══════════════════════════════════
+   TELA 1 — CATÁLOGO
+══════════════════════════════════ */
+.catalog { max-width:1100px; margin:0 auto; padding:5rem 2rem 4rem; }
+.catalog-header { text-align:center; margin-bottom:3.5rem; }
+.badge-tag { display:inline-block; background:rgba(0,229,255,0.08); border:1px solid var(--border); color:var(--accent); font-family:'Space Mono',monospace; font-size:0.7rem; padding:0.3rem 1rem; border-radius:100px; margin-bottom:1.2rem; letter-spacing:1px; }
+.catalog-header h1 { font-family:'Syne',sans-serif; font-size:clamp(2rem,5vw,3.5rem); font-weight:800; letter-spacing:-2px; margin-bottom:1rem; }
+.catalog-header h1 span { color:var(--accent); }
+.catalog-header p { color:var(--muted); font-size:1rem; line-height:1.7; max-width:520px; margin:0 auto; }
+
+.courses-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(310px,1fr)); gap:1.5rem; }
+.course-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; overflow:hidden; cursor:pointer; transition:all 0.3s; position:relative; }
+.course-card:hover { transform:translateY(-5px); border-color:rgba(0,229,255,0.3); box-shadow:0 12px 40px rgba(0,0,0,0.4); }
+.course-thumb { height:10px; }
+.thumb-cyan { background:linear-gradient(90deg,#00e5ff,#7c3aed); }
+.thumb-purple { background:linear-gradient(90deg,#7c3aed,#ec4899); }
+.thumb-green { background:linear-gradient(90deg,#10b981,#06b6d4); }
+.thumb-orange { background:linear-gradient(90deg,#f97316,#eab308); }
+.course-body { padding:1.75rem; }
+.course-meta { display:flex; justify-content:space-between; align-items:center; margin-bottom:0.9rem; }
+.level-badge { font-family:'Space Mono',monospace; font-size:0.62rem; text-transform:uppercase; letter-spacing:1px; }
+.l-init { color:var(--accent3); } .l-inter { color:var(--warn); } .l-adv { color:#f97316; }
+.duration { font-family:'Space Mono',monospace; font-size:0.62rem; color:var(--muted); }
+.course-body h3 { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:700; margin-bottom:0.5rem; line-height:1.3; }
+.course-body p { color:var(--muted); font-size:0.83rem; line-height:1.55; margin-bottom:1.2rem; }
+.course-tags { display:flex; gap:0.4rem; flex-wrap:wrap; margin-bottom:1.4rem; }
+.ctag { font-size:0.65rem; padding:0.2rem 0.55rem; border-radius:4px; background:rgba(255,255,255,0.05); color:var(--muted); border:1px solid rgba(255,255,255,0.07); }
+.btn-access { width:100%; padding:0.75rem; border-radius:8px; border:none; font-family:'Syne',sans-serif; font-weight:700; font-size:0.88rem; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; gap:0.5rem; }
+.btn-free { background:rgba(0,229,255,0.08); color:var(--accent); border:1px solid rgba(0,229,255,0.2); }
+.btn-free:hover { background:rgba(0,229,255,0.15); border-color:var(--accent); }
+.modules-count { position:absolute; top:1rem; right:1rem; background:rgba(0,0,0,0.5); border:1px solid var(--border); border-radius:6px; font-family:'Space Mono',monospace; font-size:0.6rem; color:var(--muted); padding:0.2rem 0.5rem; }
+
+/* ══════════════════════════════════
+   TELA 2 — CADASTRO
+══════════════════════════════════ */
+.register-wrap { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:5rem 2rem 3rem; }
+.register-box { background:var(--surface); border:1px solid var(--border); border-radius:18px; padding:2.5rem; width:100%; max-width:440px; position:relative; overflow:hidden; }
+.register-box::before { content:''; position:absolute; top:-80px; right:-80px; width:250px; height:250px; border-radius:50%; background:radial-gradient(circle,rgba(124,58,237,0.1) 0%,transparent 70%); pointer-events:none; }
+.reg-icon { font-size:2.2rem; margin-bottom:1rem; }
+.register-box h2 { font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:800; margin-bottom:0.4rem; }
+.reg-course-name { color:var(--accent); font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:700; margin-bottom:0.5rem; }
+.register-box .sub { color:var(--muted); font-size:0.85rem; line-height:1.6; margin-bottom:1.75rem; }
+.form-group { margin-bottom:1rem; }
+.form-group label { display:block; font-size:0.72rem; color:var(--muted); margin-bottom:0.35rem; font-family:'Space Mono',monospace; text-transform:uppercase; letter-spacing:0.5px; }
+.form-group input { width:100%; background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:0.75rem 1rem; color:var(--text); font-family:'Inter',sans-serif; font-size:0.9rem; transition:border-color 0.2s; }
+.form-group input:focus { outline:none; border-color:var(--accent); }
+.form-group input::placeholder { color:var(--muted); }
+.btn-register { width:100%; background:linear-gradient(135deg,var(--accent),#00b8d4); color:#000; font-family:'Syne',sans-serif; font-weight:800; font-size:1rem; padding:0.9rem; border-radius:10px; border:none; cursor:pointer; margin-top:0.5rem; transition:all 0.2s; }
+.btn-register:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(0,229,255,0.3); }
+.back-link { display:inline-flex; align-items:center; gap:0.4rem; color:var(--muted); font-size:0.82rem; cursor:pointer; margin-top:1.25rem; transition:color 0.2s; background:none; border:none; font-family:'Inter',sans-serif; }
+.back-link:hover { color:var(--text); }
+.privacy-note { text-align:center; font-size:0.72rem; color:var(--muted); margin-top:1rem; line-height:1.5; }
+
+/* ══════════════════════════════════
+   TELA 3 — PLAYER DO TREINAMENTO
+══════════════════════════════════ */
+.player-layout { display:grid; grid-template-columns:280px 1fr; min-height:100vh; padding-top:58px; }
+
+/* Sidebar */
+.sidebar { background:var(--surface); border-right:1px solid var(--border); position:sticky; top:58px; height:calc(100vh - 58px); overflow-y:auto; padding:1.5rem 0; }
+.sidebar-course-title { padding:0 1.25rem 1.25rem; border-bottom:1px solid var(--border); margin-bottom:0.75rem; }
+.sidebar-course-title .s-label { font-family:'Space Mono',monospace; font-size:0.6rem; color:var(--accent); text-transform:uppercase; letter-spacing:1px; margin-bottom:0.4rem; }
+.sidebar-course-title h4 { font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:700; line-height:1.3; }
+.progress-bar-wrap { padding:0 1.25rem 1rem; border-bottom:1px solid var(--border); margin-bottom:0.5rem; }
+.progress-bar-wrap .p-label { font-size:0.72rem; color:var(--muted); margin-bottom:0.4rem; display:flex; justify-content:space-between; }
+.progress-bar { height:4px; background:rgba(255,255,255,0.06); border-radius:4px; overflow:hidden; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--accent),var(--accent2)); border-radius:4px; transition:width 0.5s ease; }
+.module-group { margin-bottom:0.25rem; }
+.module-group-title { padding:0.6rem 1.25rem; font-family:'Space Mono',monospace; font-size:0.6rem; color:var(--muted); text-transform:uppercase; letter-spacing:1px; }
+.lesson-item { display:flex; align-items:center; gap:0.6rem; padding:0.6rem 1.25rem; cursor:pointer; transition:background 0.15s; border-radius:0; font-size:0.82rem; color:var(--muted); }
+.lesson-item:hover { background:rgba(255,255,255,0.03); color:var(--text); }
+.lesson-item.active { background:rgba(0,229,255,0.06); color:var(--accent); border-right:2px solid var(--accent); }
+.lesson-item.done { color:var(--accent3); }
+.lesson-dot { width:18px; height:18px; border-radius:50%; border:1.5px solid currentColor; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:0.55rem; }
+.lesson-item.done .lesson-dot { background:var(--accent3); border-color:var(--accent3); color:#000; }
+.lesson-item.active .lesson-dot { border-color:var(--accent); background:rgba(0,229,255,0.1); }
+.lesson-type-icon { font-size:0.7rem; margin-left:auto; opacity:0.5; }
+
+/* Main content */
+.player-main { padding:2rem 2.5rem; overflow-y:auto; }
+.lesson-header { margin-bottom:2rem; padding-bottom:1.5rem; border-bottom:1px solid var(--border); }
+.lesson-breadcrumb { font-family:'Space Mono',monospace; font-size:0.65rem; color:var(--muted); margin-bottom:0.6rem; }
+.lesson-header h2 { font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:800; letter-spacing:-0.5px; margin-bottom:0.5rem; }
+.lesson-header .lesson-meta-row { display:flex; align-items:center; gap:1rem; }
+.lm-item { display:flex; align-items:center; gap:0.35rem; font-size:0.75rem; color:var(--muted); }
+
+/* Content blocks */
+.content-block { margin-bottom:2rem; }
+.content-block h3 { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:700; margin-bottom:0.75rem; color:var(--accent); }
+.content-block h4 { font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:700; margin-bottom:0.5rem; margin-top:1rem; }
+.content-block p { color:#cbd5e1; font-size:0.92rem; line-height:1.75; margin-bottom:0.75rem; }
+.content-block ul { list-style:none; margin-bottom:0.75rem; }
+.content-block ul li { color:#cbd5e1; font-size:0.9rem; line-height:1.65; padding:0.3rem 0 0.3rem 1.2rem; position:relative; }
+.content-block ul li::before { content:'▸'; position:absolute; left:0; color:var(--accent); font-size:0.7rem; top:0.45rem; }
+
+/* Highlight box */
+.highlight-box { background:rgba(0,229,255,0.04); border:1px solid rgba(0,229,255,0.15); border-left:3px solid var(--accent); border-radius:0 8px 8px 0; padding:1rem 1.25rem; margin:1rem 0; }
+.highlight-box p { margin:0; font-size:0.88rem; color:var(--text); }
+.highlight-box strong { color:var(--accent); }
+
+.tip-box { background:rgba(16,185,129,0.05); border:1px solid rgba(16,185,129,0.2); border-left:3px solid var(--accent3); border-radius:0 8px 8px 0; padding:1rem 1.25rem; margin:1rem 0; }
+.tip-box p { margin:0; font-size:0.88rem; color:var(--text); }
+
+.warn-box { background:rgba(245,158,11,0.05); border:1px solid rgba(245,158,11,0.2); border-left:3px solid var(--warn); border-radius:0 8px 8px 0; padding:1rem 1.25rem; margin:1rem 0; }
+.warn-box p { margin:0; font-size:0.88rem; color:var(--text); }
+
+/* Slides */
+.slides-container { margin:1.5rem 0; }
+.slide { display:none; background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:2rem; min-height:200px; position:relative; animation:slideIn 0.3s ease; }
+.slide.active { display:block; }
+@keyframes slideIn { from{opacity:0;transform:translateX(10px)} to{opacity:1;transform:translateX(0)} }
+.slide-num { font-family:'Space Mono',monospace; font-size:0.65rem; color:var(--muted); margin-bottom:1rem; }
+.slide h4 { font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:800; margin-bottom:1rem; color:var(--accent); }
+.slide p { color:#cbd5e1; font-size:0.9rem; line-height:1.7; }
+.slide ul { list-style:none; }
+.slide ul li { color:#cbd5e1; font-size:0.88rem; padding:0.4rem 0; padding-left:1.2rem; position:relative; line-height:1.5; }
+.slide ul li::before { content:'●'; position:absolute; left:0; color:var(--accent); font-size:0.5rem; top:0.6rem; }
+.slide-big-icon { font-size:3rem; margin-bottom:1rem; }
+.slides-nav { display:flex; align-items:center; gap:1rem; margin-top:1rem; }
+.btn-slide { background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:0.5rem 1.2rem; border-radius:6px; cursor:pointer; font-family:'Syne',sans-serif; font-size:0.82rem; font-weight:600; transition:all 0.2s; }
+.btn-slide:hover { border-color:var(--accent); color:var(--accent); }
+.btn-slide:disabled { opacity:0.3; cursor:not-allowed; }
+.slide-counter { font-family:'Space Mono',monospace; font-size:0.72rem; color:var(--muted); }
+.slide-dots { display:flex; gap:5px; margin-left:auto; }
+.slide-dot { width:6px; height:6px; border-radius:50%; background:var(--border); cursor:pointer; transition:background 0.2s; }
+.slide-dot.active { background:var(--accent); }
+
+/* Quiz */
+.quiz-block { background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:1.75rem; margin:1.5rem 0; }
+.quiz-block h4 { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; margin-bottom:1.25rem; }
+.quiz-options { list-style:none; display:flex; flex-direction:column; gap:0.6rem; margin-bottom:1rem; }
+.quiz-option { background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:8px; padding:0.75rem 1rem; cursor:pointer; font-size:0.88rem; transition:all 0.2s; display:flex; align-items:center; gap:0.75rem; }
+.quiz-option:hover { border-color:rgba(0,229,255,0.3); background:rgba(0,229,255,0.04); }
+.quiz-option.correct { border-color:var(--accent3); background:rgba(16,185,129,0.08); color:var(--accent3); }
+.quiz-option.wrong { border-color:#ef4444; background:rgba(239,68,68,0.08); color:#f87171; }
+.quiz-option.disabled { cursor:not-allowed; }
+.opt-letter { width:24px; height:24px; border-radius:6px; border:1.5px solid currentColor; display:flex; align-items:center; justify-content:center; font-family:'Space Mono',monospace; font-size:0.65rem; font-weight:700; flex-shrink:0; }
+.quiz-feedback { display:none; padding:0.75rem 1rem; border-radius:8px; font-size:0.85rem; margin-top:0.5rem; }
+.quiz-feedback.show { display:block; }
+.quiz-feedback.ok { background:rgba(16,185,129,0.1); color:var(--accent3); border:1px solid rgba(16,185,129,0.2); }
+.quiz-feedback.nok { background:rgba(239,68,68,0.08); color:#f87171; border:1px solid rgba(239,68,68,0.2); }
+
+/* Example card */
+.example-card { background:var(--surface3); border:1px solid rgba(124,58,237,0.2); border-radius:10px; padding:1.25rem; margin:1rem 0; }
+.example-label { font-family:'Space Mono',monospace; font-size:0.62rem; color:#a78bfa; text-transform:uppercase; letter-spacing:1px; margin-bottom:0.6rem; }
+.example-card p { font-size:0.88rem; color:var(--text); line-height:1.6; margin:0; }
+
+/* Lesson nav buttons */
+.lesson-nav { display:flex; justify-content:space-between; align-items:center; margin-top:3rem; padding-top:2rem; border-top:1px solid var(--border); }
+.btn-lesson-nav { background:var(--surface2); border:1px solid var(--border); color:var(--text); font-family:'Syne',sans-serif; font-weight:700; padding:0.75rem 1.5rem; border-radius:8px; cursor:pointer; font-size:0.88rem; transition:all 0.2s; display:flex; align-items:center; gap:0.5rem; }
+.btn-lesson-nav:hover { border-color:var(--accent); color:var(--accent); }
+.btn-lesson-nav.primary { background:var(--accent); color:#000; border-color:var(--accent); }
+.btn-lesson-nav.primary:hover { box-shadow:0 6px 20px rgba(0,229,255,0.3); transform:translateY(-1px); }
+.btn-lesson-nav:disabled { opacity:0.3; cursor:not-allowed; }
+.complete-btn { background:linear-gradient(135deg,var(--accent3),#06b6d4); color:#000; font-family:'Syne',sans-serif; font-weight:800; padding:0.75rem 1.5rem; border-radius:8px; border:none; cursor:pointer; font-size:0.88rem; transition:all 0.2s; }
+.complete-btn:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(16,185,129,0.3); }
+
+/* Congrats */
+.congrats-wrap { text-align:center; padding:3rem 2rem; max-width:540px; margin:0 auto; }
+.congrats-wrap .big-icon { font-size:4rem; margin-bottom:1.5rem; animation:pop 0.5s ease; }
+@keyframes pop { from{transform:scale(0)} to{transform:scale(1)} }
+.congrats-wrap h2 { font-family:'Syne',sans-serif; font-size:2rem; font-weight:800; margin-bottom:0.75rem; }
+.congrats-wrap p { color:var(--muted); font-size:0.95rem; line-height:1.7; margin-bottom:2rem; }
+.cert-card { background:var(--surface); border:1px solid rgba(0,229,255,0.2); border-radius:14px; padding:2rem; margin-bottom:2rem; position:relative; overflow:hidden; }
+.cert-card::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(0,229,255,0.03),rgba(124,58,237,0.03)); }
+.cert-title { font-family:'Space Mono',monospace; font-size:0.7rem; color:var(--accent); letter-spacing:2px; text-transform:uppercase; margin-bottom:0.5rem; }
+.cert-name { font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; margin-bottom:0.25rem; }
+.cert-course { font-size:0.9rem; color:var(--muted); margin-bottom:1rem; }
+.cert-date { font-family:'Space Mono',monospace; font-size:0.7rem; color:var(--muted); }
+.cert-badge { position:absolute; top:1.25rem; right:1.25rem; font-size:2rem; }
+
+@media(max-width:768px) {
+  .player-layout { grid-template-columns:1fr; }
+  .sidebar { position:relative; height:auto; top:0; border-right:none; border-bottom:1px solid var(--border); }
+  .player-main { padding:1.5rem; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo" onclick="goHome()">Planeta<span>Digital</span></div>
+  <div class="nav-right">
+    <div class="user-badge" id="userBadge">👤 <span id="userName">--</span></div>
+  </div>
+</nav>
+
+<!-- ══════════════ TELA 1: CATÁLOGO ══════════════ -->
+<div class="screen active" id="screenCatalog">
+  <div class="catalog">
+    <div class="catalog-header">
+      <div class="badge-tag">// TREINAMENTOS GRATUITOS</div>
+      <h1>Aprenda tecnologia.<br><span>Do jeito certo.</span></h1>
+      <p>6 treinamentos completos, conteúdo misto e acesso imediato — sem pagar nada. Basta se cadastrar.</p>
+    </div>
+    <div class="courses-grid" id="coursesGrid"></div>
+  </div>
+</div>
+
+<!-- ══════════════ TELA 2: CADASTRO ══════════════ -->
+<div class="screen" id="screenRegister">
+  <div class="register-wrap">
+    <div class="register-box">
+      <div class="reg-icon">🎓</div>
+      <h2>Acesso Gratuito</h2>
+      <div class="reg-course-name" id="regCourseName"></div>
+      <p class="sub">Preencha seus dados para liberar o treinamento agora. Você terá acesso completo imediatamente.</p>
+      <div class="form-group">
+        <label>Seu nome completo</label>
+        <input type="text" id="regName" placeholder="Ex: Maria Silva">
+      </div>
+      <div class="form-group">
+        <label>Seu melhor e-mail</label>
+        <input type="email" id="regEmail" placeholder="seu@email.com">
+      </div>
+      <div class="form-group">
+        <label>WhatsApp (com DDD)</label>
+        <input type="tel" id="regPhone" placeholder="(31) 99999-0000" oninput="fmtPhone(this)">
+      </div>
+      <button class="btn-register" onclick="doRegister()">🚀 Liberar Acesso Agora</button>
+      <div class="privacy-note">🔒 Seus dados são protegidos. Sem spam, prometemos.</div>
+      <button class="back-link" onclick="showScreen('screenCatalog')">← Voltar ao catálogo</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ TELA 3: PLAYER ══════════════ -->
+<div class="screen" id="screenPlayer">
+  <div class="player-layout">
+    <div class="sidebar" id="sidebar"></div>
+    <div class="player-main" id="playerMain"></div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════
+// DADOS DOS CURSOS
+// ════════════════════════════════════════
+const COURSES = [
+  {
+    id: 'requisitos',
+    title: 'Análise de Requisitos do Zero',
+    desc: 'Do conceito à documentação profissional. Aprenda a levantar, validar e documentar requisitos como um analista sênior.',
+    level: 'Iniciante', levelClass: 'l-init',
+    duration: '2h30', thumb: 'thumb-cyan',
+    tags: ['User Stories','Elicitação','Casos de Uso','BDD'],
+    modules: [
+      {
+        title: 'Módulo 1 — Fundamentos',
+        lessons: [
+          { title: 'O que são requisitos?', type: '📖', content: 'lesson_req_1' },
+          { title: 'Requisitos funcionais vs não-funcionais', type: '🎞️', content: 'lesson_req_2' },
+          { title: 'Quiz: Fundamentos', type: '🧩', content: 'quiz_req_1' },
+        ]
+      },
+      {
+        title: 'Módulo 2 — Elicitação',
+        lessons: [
+          { title: 'Técnicas de elicitação', type: '📖', content: 'lesson_req_3' },
+          { title: 'User Stories na prática', type: '🎞️', content: 'lesson_req_4' },
+          { title: 'Critérios de aceitação', type: '📖', content: 'lesson_req_5' },
+        ]
+      },
+      {
+        title: 'Módulo 3 — Documentação',
+        lessons: [
+          { title: 'Diagrama de casos de uso', type: '🎞️', content: 'lesson_req_6' },
+          { title: 'Quiz Final', type: '🧩', content: 'quiz_req_2' },
+        ]
+      }
+    ]
+  },
+  {
+    id: 'scrum',
+    title: 'Scrum em 1h45',
+    desc: 'Tudo que você precisa para trabalhar num time Scrum. Os 3 papéis, 4 cerimônias e os artefatos na prática.',
+    level: 'Iniciante', levelClass: 'l-init',
+    duration: '1h45', thumb: 'thumb-purple',
+    tags: ['Sprint','Backlog','Daily','Retrospectiva'],
+    modules: [
+      {
+        title: 'Módulo 1 — O Framework',
+        lessons: [
+          { title: 'O que é Scrum?', type: '📖', content: 'lesson_scrum_1' },
+          { title: 'Os 3 papéis essenciais', type: '🎞️', content: 'lesson_scrum_2' },
+          { title: 'Quiz: Papéis', type: '🧩', content: 'quiz_scrum_1' },
+        ]
+      },
+      {
+        title: 'Módulo 2 — Cerimônias',
+        lessons: [
+          { title: 'Sprint Planning', type: '📖', content: 'lesson_scrum_3' },
+          { title: 'Daily, Review e Retro', type: '🎞️', content: 'lesson_scrum_4' },
+        ]
+      },
+      {
+        title: 'Módulo 3 — Artefatos',
+        lessons: [
+          { title: 'Product e Sprint Backlog', type: '📖', content: 'lesson_scrum_5' },
+          { title: 'Quiz Final', type: '🧩', content: 'quiz_scrum_2' },
+        ]
+      }
+    ]
+  },
+  {
+    id: 'agil',
+    title: 'Gestão Ágil na Prática',
+    desc: 'Kanban, OKRs e métricas para quem quer liderar times de tecnologia com resultados reais.',
+    level: 'Intermediário', levelClass: 'l-inter',
+    duration: '3h', thumb: 'thumb-green',
+    tags: ['Kanban','OKRs','Velocity','Lead Time'],
+    modules: [
+      {
+        title: 'Módulo 1 — Mentalidade Ágil',
+        lessons: [
+          { title: 'O Manifesto Ágil', type: '📖', content: 'lesson_agil_1' },
+          { title: 'Scrum vs Kanban', type: '🎞️', content: 'lesson_agil_2' },
+        ]
+      },
+      {
+        title: 'Módulo 2 — OKRs',
+        lessons: [
+          { title: 'O que são OKRs?', type: '📖', content: 'lesson_agil_3' },
+          { title: 'Criando seus primeiros OKRs', type: '🎞️', content: 'lesson_agil_4' },
+          { title: 'Quiz: OKRs', type: '🧩', content: 'quiz_agil_1' },
+        ]
+      },
+      {
+        title: 'Módulo 3 — Métricas',
+        lessons: [
+          { title: 'Velocity, Lead Time e Cycle Time', type: '📖', content: 'lesson_agil_5' },
+          { title: 'Quiz Final', type: '🧩', content: 'quiz_agil_2' },
+        ]
+      }
+    ]
+  },
+  {
+    id: 'po',
+    title: 'Product Owner Essencial',
+    desc: 'Como priorizar, comunicar e entregar valor como PO. Frameworks de priorização e gestão de backlog.',
+    level: 'Intermediário', levelClass: 'l-inter',
+    duration: '2h', thumb: 'thumb-orange',
+    tags: ['RICE','MoSCoW','Backlog','MVP'],
+    modules: [
+      {
+        title: 'Módulo 1 — O Papel do PO',
+        lessons: [
+          { title: 'O que faz um Product Owner?', type: '📖', content: 'lesson_po_1' },
+          { title: 'PO vs PM vs Scrum Master', type: '🎞️', content: 'lesson_po_2' },
+        ]
+      },
+      {
+        title: 'Módulo 2 — Priorização',
+        lessons: [
+          { title: 'Framework RICE e MoSCoW', type: '📖', content: 'lesson_po_3' },
+          { title: 'Refinamento de backlog', type: '🎞️', content: 'lesson_po_4' },
+          { title: 'Quiz: Priorização', type: '🧩', content: 'quiz_po_1' },
+        ]
+      },
+      {
+        title: 'Módulo 3 — MVP e Stakeholders',
+        lessons: [
+          { title: 'Definindo um MVP', type: '📖', content: 'lesson_po_5' },
+          { title: 'Quiz Final', type: '🧩', content: 'quiz_po_2' },
+        ]
+      }
+    ]
+  },
+  {
+    id: 'linkedin',
+    title: 'LinkedIn para Tech',
+    desc: 'Monte um perfil que atrai recrutadores e oportunidades em tecnologia, mesmo sem experiência.',
+    level: 'Iniciante', levelClass: 'l-init',
+    duration: '1h20', thumb: 'thumb-cyan',
+    tags: ['Headline','Portfólio','Networking','SEO'],
+    modules: [
+      {
+        title: 'Módulo 1 — Perfil Estratégico',
+        lessons: [
+          { title: 'Headline que converte', type: '📖', content: 'lesson_li_1' },
+          { title: 'Resumo e experiências', type: '🎞️', content: 'lesson_li_2' },
+        ]
+      },
+      {
+        title: 'Módulo 2 — Visibilidade',
+        lessons: [
+          { title: 'Portfólio sem experiência', type: '📖', content: 'lesson_li_3' },
+          { title: 'Networking ativo e passivo', type: '🎞️', content: 'lesson_li_4' },
+          { title: 'Quiz Final', type: '🧩', content: 'quiz_li_1' },
+        ]
+      }
+    ]
+  },
+  {
+    id: 'entrevista',
+    title: 'Entrevistas Tech sem Medo',
+    desc: 'Estratégias para arrasar em processos seletivos de tech: comportamental, case study e negociação.',
+    level: 'Avançado', levelClass: 'l-adv',
+    duration: '4h', thumb: 'thumb-purple',
+    tags: ['STAR','Case Study','Negociação','Fit Cultural'],
+    modules: [
+      {
+        title: 'Módulo 1 — Preparação',
+        lessons: [
+          { title: 'Mapeando empresas e vagas', type: '📖', content: 'lesson_ent_1' },
+          { title: 'Método STAR na prática', type: '🎞️', content: 'lesson_ent_2' },
+          { title: 'Quiz: Método STAR', type: '🧩', content: 'quiz_ent_1' },
+        ]
+      },
+      {
+        title: 'Módulo 2 — Na Entrevista',
+        lessons: [
+          { title: 'Case study ao vivo', type: '📖', content: 'lesson_ent_3' },
+          { title: '50 perguntas e respostas', type: '🎞️', content: 'lesson_ent_4' },
+        ]
+      },
+      {
+        title: 'Módulo 3 — Fechamento',
+        lessons: [
+          { title: 'Negociação de salário', type: '📖', content: 'lesson_ent_5' },
+          { title: 'Quiz Final', type: '🧩', content: 'quiz_ent_2' },
+        ]
+      }
+    ]
+  }
+];
+
+// ════════════════════════════════════════
+// CONTEÚDO DAS AULAS
+// ════════════════════════════════════════
+const LESSONS = {
+
+  // ── ANÁLISE DE REQUISITOS ──
+  lesson_req_1: {
+    title: 'O que são requisitos?',
+    module: 'Módulo 1 — Fundamentos',
+    duration: '15 min', type: 'Leitura',
+    html: `
+      <div class="content-block">
+        <h3>Definição</h3>
+        <p>Requisito é qualquer condição ou capacidade que um sistema precisa ter para satisfazer uma necessidade de negócio, um contrato ou uma norma. Em termos simples: é tudo aquilo que o sistema <strong>deve fazer</strong> ou <strong>deve ser</strong>.</p>
+        <div class="highlight-box"><p><strong>Analogia:</strong> Pense nos requisitos como a planta de uma casa. Sem ela, cada profissional constrói do jeito que entende — e o resultado é caos. Com ela, todos seguem o mesmo guia.</p></div>
+        <h4>Por que requisitos importam?</h4>
+        <ul>
+          <li>Projetos sem requisitos claros têm 60% mais chance de falhar (Standish Group, 2023)</li>
+          <li>Correção de erros no início custa 10x menos do que no final do projeto</li>
+          <li>Requisitos bem escritos reduzem retrabalho e conflitos entre times</li>
+          <li>São a base para estimativas de prazo e custo</li>
+        </ul>
+        <h4>Quem é o Analista de Requisitos?</h4>
+        <p>É o profissional responsável por fazer a ponte entre o negócio (que sabe o que quer) e a tecnologia (que sabe como construir). Ele coleta, analisa, documenta e valida os requisitos com todas as partes interessadas.</p>
+        <div class="tip-box"><p>💡 <strong>Dica de carreira:</strong> A Análise de Requisitos é uma das portas de entrada mais acessíveis para a área de tecnologia. Não exige programação e valoriza habilidades de comunicação.</p></div>
+      </div>
+      <div class="slides-container" id="slides_req_1">
+        <div class="slide active"><div class="slide-num">Slide 1 de 4</div><div class="slide-big-icon">📋</div><h4>Os 4 tipos de requisitos</h4><p>Requisitos se dividem em categorias que ajudam a organizá-los e priorizá-los no projeto.</p></div>
+        <div class="slide"><div class="slide-num">Slide 2 de 4</div><h4>1. Funcionais</h4><p>Descrevem <strong>o que o sistema faz</strong>. Ex: "O sistema deve permitir que o usuário faça login com e-mail e senha."</p></div>
+        <div class="slide"><div class="slide-num">Slide 3 de 4</div><h4>2. Não-Funcionais</h4><p>Descrevem <strong>como o sistema se comporta</strong>. Ex: "O login deve ser concluído em menos de 2 segundos." (Performance, Segurança, Usabilidade)</p></div>
+        <div class="slide"><div class="slide-num">Slide 4 de 4</div><h4>3. De Negócio + 4. Restrições</h4><p><strong>Negócio:</strong> objetivos estratégicos da empresa. <strong>Restrições:</strong> limitações de tecnologia, prazo ou orçamento que impactam o sistema.</p></div>
+        <div class="slides-nav">
+          <button class="btn-slide" onclick="prevSlide('slides_req_1')" id="prev_slides_req_1" disabled>← Anterior</button>
+          <span class="slide-counter" id="counter_slides_req_1">1 / 4</span>
+          <button class="btn-slide" onclick="nextSlide('slides_req_1')" id="next_slides_req_1">Próximo →</button>
+          <div class="slide-dots" id="dots_slides_req_1"></div>
+        </div>
+      </div>`
+  },
+
+  lesson_req_2: {
+    title: 'Requisitos funcionais vs não-funcionais',
+    module: 'Módulo 1 — Fundamentos',
+    duration: '20 min', type: 'Slides',
+    html: `
+      <div class="slides-container" id="slides_req_2">
+        <div class="slide active"><div class="slide-num">Slide 1 de 5</div><div class="slide-big-icon">⚖️</div><h4>Funcionais x Não-Funcionais</h4><p>Entender essa distinção é fundamental para qualquer analista. Vamos aprender com exemplos reais.</p></div>
+        <div class="slide"><div class="slide-num">Slide 2 de 5</div><h4>Requisitos Funcionais (RF)</h4><ul><li>Definem o comportamento do sistema</li><li>Respondem "O que o sistema faz?"</li><li>Ex: "O usuário pode filtrar produtos por categoria"</li><li>Ex: "O sistema envia e-mail de confirmação após compra"</li><li>Ex: "O admin pode cancelar pedidos em até 24h"</li></ul></div>
+        <div class="slide"><div class="slide-num">Slide 3 de 5</div><h4>Requisitos Não-Funcionais (RNF)</h4><ul><li>Definem qualidades e restrições do sistema</li><li>Respondem "Como o sistema deve se comportar?"</li><li>Ex: "A página carrega em menos de 3s"</li><li>Ex: "O sistema suporta 10.000 usuários simultâneos"</li><li>Ex: "Dados criptografados com AES-256"</li></ul></div>
+        <div class="slide"><div class="slide-num">Slide 4 de 5</div><h4>Categorias de RNF (FURPS+)</h4><ul><li><strong>F</strong>unctionality — segurança, conformidade</li><li><strong>U</strong>sability — facilidade de uso</li><li><strong>R</strong>eliability — disponibilidade, recuperação</li><li><strong>P</strong>erformance — tempo de resposta, capacidade</li><li><strong>S</strong>upportability — manutenção, portabilidade</li></ul></div>
+        <div class="slide"><div class="slide-num">Slide 5 de 5</div><h4>Exercício Mental</h4><p>Classifique: "O sistema deve ter uma tela de relatórios mensais." → <strong style="color:var(--accent3)">Funcional ✓</strong></p><p style="margin-top:0.75rem">Classifique: "O sistema deve estar disponível 99,9% do tempo." → <strong style="color:var(--accent)">Não-Funcional ✓</strong></p></div>
+        <div class="slides-nav">
+          <button class="btn-slide" onclick="prevSlide('slides_req_2')" id="prev_slides_req_2" disabled>← Anterior</button>
+          <span class="slide-counter" id="counter_slides_req_2">1 / 5</span>
+          <button class="btn-slide" onclick="nextSlide('slides_req_2')" id="next_slides_req_2">Próximo →</button>
+          <div class="slide-dots" id="dots_slides_req_2"></div>
+        </div>
+      </div>`,
+  },
+
+  quiz_req_1: {
+    title: 'Quiz: Fundamentos de Requisitos',
+    module: 'Módulo 1 — Fundamentos',
+    duration: '5 min', type: 'Quiz',
+    html: `
+      <div class="content-block"><p>Teste o que você aprendeu sobre os fundamentos de requisitos. Cada questão tem apenas uma resposta correta.</p></div>
+      <div class="quiz-block" id="q1">
+        <h4>1. O que melhor define um "requisito funcional"?</h4>
+        <ul class="quiz-options">
+          <li class="quiz-option" onclick="answerQuiz('q1',0,1)"><span class="opt-letter">A</span> Define a velocidade de carregamento do sistema</li>
+          <li class="quiz-option" onclick="answerQuiz('q1',1,1)"><span class="opt-letter">B</span> Descreve o que o sistema deve fazer</li>
+          <li class="quiz-option" onclick="answerQuiz('q1',2,1)"><span class="opt-letter">C</span> Limita o orçamento do projeto</li>
+          <li class="quiz-option" onclick="answerQuiz('q1',3,1)"><span class="opt-letter">D</span> Define a equipe responsável</li>
+        </ul>
+        <div class="quiz-feedback" id="fb_q1"></div>
+      </div>
+      <div class="quiz-block" id="q2">
+        <h4>2. "O sistema deve suportar 5.000 acessos simultâneos" é um requisito:</h4>
+        <ul class="quiz-options">
+          <li class="quiz-option" onclick="answerQuiz('q2',0,1)"><span class="opt-letter">A</span> Funcional</li>
+          <li class="quiz-option" onclick="answerQuiz('q2',1,1)"><span class="opt-letter">B</span> Não-Funcional</li>
+          <li class="quiz-option" onclick="answerQuiz('q2',2,1)"><span class="opt-letter">C</span> De negócio</li>
+          <li class="quiz-option" onclick="answerQuiz('q2',3,1)"><span class="opt-letter">D</span> Restrição de prazo</li>
+        </ul>
+        <div class="quiz-feedback" id="fb_q2"></div>
+      </div>`,
+  },
+
+  lesson_req_3: {
+    title: 'Técnicas de elicitação',
+    module: 'Módulo 2 — Elicitação',
+    duration: '25 min', type: 'Leitura',
+    html: `
+      <div class="content-block">
+        <h3>O que é Elicitação?</h3>
+        <p>Elicitar requisitos é o processo de descobrir, extrair e compreender as necessidades das partes interessadas (stakeholders). Não basta perguntar "o que você quer?" — é preciso usar técnicas para revelar necessidades implícitas que nem o próprio cliente sabe que tem.</p>
+        <h4>1. Entrevistas</h4>
+        <p>A técnica mais comum. Conversas estruturadas ou semi-estruturadas com stakeholders. Use perguntas abertas para explorar e fechadas para confirmar.</p>
+        <div class="example-card"><div class="example-label">Exemplo de pergunta aberta</div><p>"Conte-me como você realiza esse processo atualmente. O que funciona bem e o que te frustra?"</p></div>
+        <h4>2. Workshops de Requisitos (JAD)</h4>
+        <p>Reuniões estruturadas com múltiplos stakeholders e facilitador. Ótimas para alinhar visões conflitantes e acelerar o processo de levantamento.</p>
+        <h4>3. Observação (Etnografia)</h4>
+        <p>O analista observa os usuários no ambiente real de trabalho, sem interferir. Revela requisitos que os usuários não conseguem verbalizar por já fazerem "no automático".</p>
+        <h4>4. Prototipagem</h4>
+        <p>Criação de telas ou fluxos simples para validar entendimento. O usuário vê algo concreto e consegue dar feedback muito mais preciso do que em reuniões abstratas.</p>
+        <h4>5. Análise de Documentos</h4>
+        <p>Análise de sistemas legados, manuais, planilhas e processos existentes para extrair requisitos implícitos.</p>
+        <div class="tip-box"><p>💡 <strong>Dica prática:</strong> Use ao menos 2 técnicas combinadas em todo projeto. Entrevistas + Prototipagem é uma combinação poderosa para projetos de médio porte.</p></div>
+      </div>`,
+  },
+
+  lesson_req_4: {
+    title: 'User Stories na prática',
+    module: 'Módulo 2 — Elicitação',
+    duration: '20 min', type: 'Slides',
+    html: `
+      <div class="slides-container" id="slides_req_4">
+        <div class="slide active"><div class="slide-num">Slide 1 de 5</div><div class="slide-big-icon">📝</div><h4>User Stories (Histórias de Usuário)</h4><p>A forma mais popular de documentar requisitos em times ágeis. Simples, focada no usuário e orientada a valor.</p></div>
+        <div class="slide"><div class="slide-num">Slide 2 de 5</div><h4>A fórmula clássica</h4><p style="font-size:1.1rem;text-align:center;padding:1rem;background:rgba(0,229,255,0.05);border-radius:8px;border:1px solid rgba(0,229,255,0.15)"><strong style="color:var(--accent)">Como</strong> [tipo de usuário],<br><strong style="color:#a78bfa">Quero</strong> [funcionalidade],<br><strong style="color:var(--accent3)">Para que</strong> [benefício/valor].</p></div>
+        <div class="slide"><div class="slide-num">Slide 3 de 5</div><h4>Exemplos Reais</h4><ul><li>Como <strong>cliente</strong>, quero filtrar produtos por preço, para que eu encontre opções dentro do meu orçamento.</li><li>Como <strong>administrador</strong>, quero exportar relatórios em PDF, para que eu possa apresentar dados à diretoria.</li><li>Como <strong>usuário mobile</strong>, quero login com biometria, para que eu não precise digitar senha toda vez.</li></ul></div>
+        <div class="slide"><div class="slide-num">Slide 4 de 5</div><h4>Critério INVEST</h4><ul><li><strong>I</strong>ndependente — pode ser desenvolvida sozinha</li><li><strong>N</strong>egociável — não é contrato, é conversa</li><li><strong>V</strong>aliosa — entrega valor ao usuário</li><li><strong>E</strong>stimável — tem tamanho estimável</li><li><strong>S</strong>mall — pequena o suficiente para um sprint</li><li><strong>T</strong>estável — tem critérios de aceitação claros</li></ul></div>
+        <div class="slide"><div class="slide-num">Slide 5 de 5</div><h4>Épicos vs Stories</h4><p><strong style="color:#f97316">Épico:</strong> história grande demais para um sprint. Ex: "Como cliente, quero fazer compras pelo app."</p><p style="margin-top:0.75rem"><strong style="color:var(--accent3)">Stories:</strong> partes menores do épico. Ex: "Adicionar ao carrinho", "Finalizar compra", "Ver histórico de pedidos".</p></div>
+        <div class="slides-nav">
+          <button class="btn-slide" onclick="prevSlide('slides_req_4')" id="prev_slides_req_4" disabled>← Anterior</button>
+          <span class="slide-counter" id="counter_slides_req_4">1 / 5</span>
+          <button class="btn-slide" onclick="nextSlide('slides_req_4')" id="next_slides_req_4">Próximo →</button>
+          <div class="slide-dots" id="dots_slides_req_4"></div>
+        </div>
+      </div>`,
+  },
+
+  lesson_req_5: { title:'Critérios de aceitação', module:'Módulo 2 — Elicitação', duration:'15 min', type:'Leitura', html:`<div class="content-block"><h3>O que são Critérios de Aceitação?</h3><p>São as condições que uma User Story precisa satisfazer para ser considerada "pronta" (done). São o contrato entre o time e o PO.</p><div class="highlight-box"><p><strong>Formato Dado/Quando/Então (BDD):</strong> a forma mais usada em times ágeis.</p></div><div class="example-card"><div class="example-label">Exemplo — US: Login com e-mail</div><p><strong>Dado</strong> que o usuário está na tela de login,<br><strong>Quando</strong> ele inserir e-mail e senha corretos e clicar em "Entrar",<br><strong>Então</strong> o sistema deve redirecioná-lo para o dashboard em menos de 2 segundos.</p></div><h4>Boas práticas</h4><ul><li>Use linguagem simples — qualquer stakeholder deve entender</li><li>Seja específico — evite "rápido", "fácil", "bom"</li><li>Cada critério deve ser testável independentemente</li><li>Escreva pelo menos 3 critérios por User Story</li><li>Inclua cenários de erro, não só o caminho feliz</li></ul><div class="tip-box"><p>💡 <strong>Regra de ouro:</strong> Se o QA não consegue criar um teste a partir do critério, ele está mal escrito.</p></div></div>` },
+
+  lesson_req_6: { title:'Diagrama de casos de uso', module:'Módulo 3 — Documentação', duration:'20 min', type:'Slides', html:`<div class="slides-container" id="slides_req_6"><div class="slide active"><div class="slide-num">Slide 1 de 4</div><div class="slide-big-icon">🗂️</div><h4>Casos de Uso (Use Cases)</h4><p>Representação visual e textual das interações entre usuários (atores) e o sistema. Muito usados em projetos com documentação formal.</p></div><div class="slide"><div class="slide-num">Slide 2 de 4</div><h4>Elementos do Diagrama</h4><ul><li>🧑 <strong>Ator:</strong> quem interage com o sistema (usuário, sistema externo)</li><li>⭕ <strong>Caso de Uso:</strong> ação que o sistema executa (verbo no infinitivo)</li><li>─ <strong>Associação:</strong> linha ligando ator ao caso de uso</li><li>«include» inclui outro caso de uso obrigatoriamente</li><li>«extend» adiciona comportamento opcional</li></ul></div><div class="slide"><div class="slide-num">Slide 3 de 4</div><h4>Exemplo: E-commerce</h4><p><strong>Atores:</strong> Cliente, Administrador, Sistema de Pagamento</p><p style="margin-top:0.5rem"><strong>Casos de uso do Cliente:</strong><br>• Fazer Login<br>• Buscar Produto<br>• Adicionar ao Carrinho<br>• Finalizar Compra «include» Processar Pagamento</p></div><div class="slide"><div class="slide-num">Slide 4 de 4</div><h4>Quando usar?</h4><ul><li>Projetos com requisitos formais (governo, saúde, bancário)</li><li>Para comunicar escopo com stakeholders não-técnicos</li><li>Quando o sistema tem muitos tipos de usuário</li><li>Como complemento às User Stories no backlog</li></ul></div><div class="slides-nav"><button class="btn-slide" onclick="prevSlide('slides_req_6')" id="prev_slides_req_6" disabled>← Anterior</button><span class="slide-counter" id="counter_slides_req_6">1 / 4</span><button class="btn-slide" onclick="nextSlide('slides_req_6')" id="next_slides_req_6">Próximo →</button><div class="slide-dots" id="dots_slides_req_6"></div></div></div>` },
+
+  quiz_req_2: { title:'Quiz Final — Análise de Requisitos', module:'Módulo 3 — Documentação', duration:'8 min', type:'Quiz', html:`<div class="content-block"><p>Quiz final do treinamento. Você está quase lá! 🎉</p></div><div class="quiz-block" id="qr1"><h4>1. Qual técnica consiste em observar usuários trabalhando sem interferir?</h4><ul class="quiz-options"><li class="quiz-option" onclick="answerQuiz('qr1',0,2)"><span class="opt-letter">A</span> Entrevista</li><li class="quiz-option" onclick="answerQuiz('qr1',1,2)"><span class="opt-letter">B</span> Etnografia / Observação</li><li class="quiz-option" onclick="answerQuiz('qr1',2,2)"><span class="opt-letter">C</span> JAD</li><li class="quiz-option" onclick="answerQuiz('qr1',3,2)"><span class="opt-letter">D</span> Prototipagem</li></ul><div class="quiz-feedback" id="fb_qr1"></div></div><div class="quiz-block" id="qr2"><h4>2. No critério INVEST, o "T" significa que a User Story deve ser:</h4><ul class="quiz-options"><li class="quiz-option" onclick="answerQuiz('qr2',0,3)"><span class="opt-letter">A</span> Técnica</li><li class="quiz-option" onclick="answerQuiz('qr2',1,3)"><span class="opt-letter">B</span> Transparente</li><li class="quiz-option" onclick="answerQuiz('qr2',2,3)"><span class="opt-letter">C</span> Testável</li><li class="quiz-option" onclick="answerQuiz('qr2',3,3)"><span class="opt-letter">D</span> Temporal</li></ul><div class="quiz-feedback" id="fb_qr2"></div></div>` },
+
+  // ── SCRUM ──
+  lesson_scrum_1: { title:'O que é Scrum?', module:'Módulo 1 — O Framework', duration:'12 min', type:'Leitura', html:`<div class="content-block"><h3>Scrum: o framework ágil mais usado no mundo</h3><p>Scrum é um framework leve que ajuda pessoas, times e organizações a gerar valor através de soluções adaptativas para problemas complexos. Não é uma metodologia — é um conjunto de regras simples que guiam o trabalho.</p><div class="highlight-box"><p><strong>Dados reais:</strong> 87% dos times ágeis usam Scrum ou uma variação dele (State of Agile, 2024). É a linguagem comum da maioria das empresas de tech no Brasil e no mundo.</p></div><h4>Os pilares do Scrum</h4><ul><li><strong>Transparência:</strong> todos veem o que está acontecendo — backlog aberto, progresso visível</li><li><strong>Inspeção:</strong> o time inspeciona frequentemente o progresso em direção ao objetivo</li><li><strong>Adaptação:</strong> quando algo está errado, ajusta-se imediatamente</li></ul><h4>Os valores do Scrum</h4><ul><li>🎯 Comprometimento — foco no Sprint Goal</li><li>💪 Coragem — para fazer a coisa certa</li><li>🎯 Foco — no trabalho do Sprint</li><li>🤝 Abertura — sobre o trabalho e desafios</li><li>🙏 Respeito — entre os membros do time</li></ul><div class="tip-box"><p>💡 O Scrum Guide (guia oficial do Scrum) é gratuito em português em scrumguides.org — vale a pena ler após este treinamento.</p></div></div>` },
+
+  lesson_scrum_2: { title:'Os 3 papéis essenciais', module:'Módulo 1 — O Framework', duration:'18 min', type:'Slides', html:`<div class="slides-container" id="slides_scrum_2"><div class="slide active"><div class="slide-num">Slide 1 de 4</div><div class="slide-big-icon">👥</div><h4>O Scrum Team</h4><p>O time Scrum é composto por 3 papéis distintos. Não há hierarquia — são complementares e igualmente importantes.</p></div><div class="slide"><div class="slide-num">Slide 2 de 4</div><h4>🎯 Product Owner (PO)</h4><ul><li>Responsável por maximizar o valor do produto</li><li>Dono e gestor do Product Backlog</li><li>Prioriza itens com base em valor de negócio</li><li>Representa os stakeholders junto ao time</li><li>A palavra final sobre o "o quê" construir</li></ul></div><div class="slide"><div class="slide-num">Slide 3 de 4</div><h4>🛡️ Scrum Master</h4><ul><li>Garante que o Scrum é compreendido e aplicado</li><li>Remove impedimentos que travam o time</li><li>Facilita todas as cerimônias</li><li>Coach do time e da organização</li><li>Não é gerente — é servo-líder</li></ul></div><div class="slide"><div class="slide-num">Slide 4 de 4</div><h4>⚙️ Developers (Time de Desenvolvimento)</h4><ul><li>Responsáveis por entregar o Incremento</li><li>Cross-funcional: têm todas as habilidades necessárias</li><li>Auto-organizados: decidem COMO construir</li><li>Tamanho ideal: 3 a 9 pessoas</li><li>Inclui devs, QAs, designers, analistas</li></ul></div><div class="slides-nav"><button class="btn-slide" onclick="prevSlide('slides_scrum_2')" id="prev_slides_scrum_2" disabled>← Anterior</button><span class="slide-counter" id="counter_slides_scrum_2">1 / 4</span><button class="btn-slide" onclick="nextSlide('slides_scrum_2')" id="next_slides_scrum_2">Próximo →</button><div class="slide-dots" id="dots_slides_scrum_2"></div></div></div>` },
+
+  quiz_scrum_1: { title:'Quiz: Papéis no Scrum', module:'Módulo 1 — O Framework', duration:'5 min', type:'Quiz', html:`<div class="quiz-block" id="qs1"><h4>1. Quem é responsável por remover impedimentos no Scrum?</h4><ul class="quiz-options"><li class="quiz-option" onclick="answerQuiz('qs1',0,1)"><span class="opt-letter">A</span> Product Owner</li><li class="quiz-option" onclick="answerQuiz('qs1',1,1)"><span class="opt-letter">B</span> Gerente de Projetos</li><li class="quiz-option" onclick="answerQuiz('qs1',2,1)"><span class="opt-letter">C</span> Scrum Master</li><li class="quiz-option" onclick="answerQuiz('qs1',3,1)"><span class="opt-letter">D</span> Tech Lead</li></ul><div class="quiz-feedback" id="fb_qs1"></div></div><div class="quiz-block" id="qs2"><h4>2. Quantas pessoas recomenda-se em um time de desenvolvimento Scrum?</h4><ul class="quiz-options"><li class="quiz-option" onclick="answerQuiz('qs2',0,1)"><span class="opt-letter">A</span> 1 a 3</li><li class="quiz-option" onclick="answerQuiz('qs2',1,1)"><span class="opt-letter">B</span> 3 a 9</li><li class="quiz-option" onclick="answerQuiz('qs2',2,1)"><span class="opt-letter">C</span> 10 a 15</li><li class="quiz-option" onclick="answerQuiz('qs2',3,1)"><span class="opt-letter">D</span> Sem limite definido</li></ul><div class="quiz-feedback" id="fb_qs2"></div></div>` },
+
+  lesson_scrum_3: { title:'Sprint Planning', module:'Módulo 2 — Cerimônias', duration:'15 min', type:'Leitura', html:`<div class="content-block"><h3>Sprint Planning — Planejando o Sprint</h3><p>A Sprint Planning é a cerimônia que abre cada Sprint. O time se reúne para definir O QUE será construído e COMO será feito.</p><h4>Duração</h4><ul><li>Sprint de 1 semana → máximo 2 horas</li><li>Sprint de 2 semanas → máximo 4 horas</li><li>Sprint de 4 semanas → máximo 8 horas</li></ul><h4>As 3 perguntas da Sprint Planning</h4><div class="example-card"><div class="example-label">Pergunta 1</div><p><strong>Por que esse Sprint tem valor?</strong> → Define o Sprint Goal (objetivo do sprint)</p></div><div class="example-card"><div class="example-label">Pergunta 2</div><p><strong>O que pode ser feito nesse Sprint?</strong> → Time seleciona itens do Product Backlog para o Sprint Backlog</p></div><div class="example-card"><div class="example-label">Pergunta 3</div><p><strong>Como o trabalho será feito?</strong> → Time detalha as tarefas para cada item selecionado</p></div><div class="highlight-box"><p><strong>Sprint Goal:</strong> é o compromisso do time para o Sprint. Deve ser claro, alcançável e valioso. Ex: "Ao final deste Sprint, os clientes poderão realizar pagamentos via Pix."</p></div></div>` },
+
+  lesson_scrum_4: { title:'Daily, Review e Retrospectiva', module:'Módulo 2 — Cerimônias', duration:'20 min', type:'Slides', html:`<div class="slides-container" id="slides_scrum_4"><div class="slide active"><div class="slide-num">Slide 1 de 4</div><div class="slide-big-icon">🔄</div><h4>3 cerimônias essenciais</h4><p>Daily Scrum, Sprint Review e Sprint Retrospective completam o ciclo Scrum. Cada uma tem propósito distinto.</p></div><div class="slide"><div class="slide-num">Slide 2 de 4</div><h4>☀️ Daily Scrum (15 min)</h4><ul><li>Acontece todo dia, mesmo horário e local</li><li>Apenas os Developers (SM e PO podem observar)</li><li>3 perguntas: O que fiz ontem? O que farei hoje? Há impedimentos?</li><li>Não é reunião de status para o chefe — é sincronização do time</li><li>Problemas identificados são resolvidos FORA da Daily</li></ul></div><div class="slide"><div class="slide-num">Slide 3 de 4</div><h4>🎯 Sprint Review</h4><ul><li>Ao final do Sprint — máximo 4h (sprint de 4 semanas)</li><li>Time demonstra o Incremento aos stakeholders</li><li>Feedback coletado para atualizar o backlog</li><li>Não é reunião de aprovação — é colaboração</li><li>O que foi "Done" é apresentado, não o que ficou pela metade</li></ul></div><div class="slide"><div class="slide-num">Slide 4 de 4</div><h4>💡 Retrospectiva</h4><ul><li>Última cerimônia do Sprint — máximo 3h</li><li>Apenas o Scrum Team (sem stakeholders)</li><li>O que foi bem? O que pode melhorar? O que faremos diferente?</li><li>Resultado: plano de ação com melhorias concretas</li><li>A mais negligenciada e a mais transformadora das cerimônias</li></ul></div><div class="slides-nav"><button class="btn-slide" onclick="prevSlide('slides_scrum_4')" id="prev_slides_scrum_4" disabled>← Anterior</button><span class="slide-counter" id="counter_slides_scrum_4">1 / 4</span><button class="btn-slide" onclick="nextSlide('slides_scrum_4')" id="next_slides_scrum_4">Próximo →</button><div class="slide-dots" id="dots_slides_scrum_4"></div></div></div>` },
+
+  lesson_scrum_5: { title:'Product e Sprint Backlog', module:'Módulo 3 — Artefatos', duration:'15 min', type:'Leitura', html:`<div class="content-block"><h3>Os Artefatos do Scrum</h3><p>Artefatos representam trabalho ou valor. Foram projetados para maximizar a transparência das informações-chave.</p><h4>📦 Product Backlog</h4><p>Lista ordenada de tudo que é conhecido ser necessário no produto. É dinâmico — evolui à medida que o produto e o mercado evoluem. O PO é o único responsável por ele.</p><ul><li>Contém funcionalidades, correções, melhorias e requisitos técnicos</li><li>Itens no topo são mais detalhados e prontos para sprint</li><li>Itens no fundo são vagos e de menor prioridade</li><li>Refinamento: processo contínuo de detalhar e estimar itens</li></ul><h4>🗂️ Sprint Backlog</h4><p>Subconjunto do Product Backlog selecionado para o Sprint, mais o plano de como entregá-lo. Pertence ao time de desenvolvimento.</p><div class="highlight-box"><p><strong>Definition of Done (DoD):</strong> lista formal de critérios que um Incremento deve atender para ser considerado "pronto". Garante qualidade e transparência. Ex: código revisado, testes passando, documentação atualizada.</p></div><div class="tip-box"><p>💡 Um bom DoD é o que diferencia um time ágil maduro de um time que apenas "usa" Scrum superficialmente.</p></div></div>` },
+
+  quiz_scrum_2: { title:'Quiz Final — Scrum', module:'Módulo 3 — Artefatos', duration:'6 min', type:'Quiz', html:`<div class="quiz-block" id="qsc1"><h4>1. Qual é a duração máxima de uma Daily Scrum?</h4><ul class="quiz-options"><li class="quiz-option" onclick="answerQuiz('qsc1',0,0)"><span class="opt-letter">A</span> 15 minutos</li><li class="quiz-option" onclick="answerQuiz('qsc1',1,0)"><span class="opt-letter">B</span> 30 minutos</li><li class="quiz-option" onclick="answerQuiz('qsc1',2,0)"><span class="opt-letter">C</span> 1 hora</li><li class="quiz-option" onclick="answerQuiz('qsc1',3,0)"><span class="opt-letter">D</span> Sem limite definido</li></ul><div class="quiz-feedback" id="fb_qsc1"></div></div><div class="quiz-block" id="qsc2"><h4>2. O Product Backlog pertence a quem?</h4><ul class="quiz-options"><li class="quiz-option" onclick="answerQuiz('qsc2',0,1)"><span class="opt-letter">A</span> Scrum Master</li><li class="quiz-option" onclick="answerQuiz('qsc2',1,1)"><span class="opt-letter">B</span> Product Owner</li><li class="quiz-option" onclick="answerQuiz('qsc2',2,1)"><span class="opt-letter">C</span> Time de Desenvolvimento</li><li class="quiz-option" onclick="answerQuiz('qsc2',3,1)"><span class="opt-letter">D</span> Stakeholders</li></ul><div class="quiz-feedback" id="fb_qsc2"></div></div>` },
+
+  // ── GESTÃO ÁGIL ──
+  lesson_agil_1: { title:'O Manifesto Ágil', module:'Módulo 1 — Mentalidade Ágil', duration:'12 min', type:'Leitura', html:`<div class="content-block"><h3>O Manifesto Ágil (2001)</h3><p>Em 2001, 17 desenvolvedores se reuniram em Utah (EUA) e criaram o Manifesto para Desenvolvimento Ágil de Software. Em poucas linhas, revolucionaram como o mundo constrói software.</p><div class="highlight-box"><p>Estamos descobrindo maneiras melhores de desenvolver software, fazendo-o nós mesmos e ajudando outros a fazê-lo. Por meio desse trabalho, passamos a valorizar:</p></div><h4>Os 4 valores do Manifesto</h4><ul><li><strong>Indivíduos e interações</strong> mais que processos e ferramentas</li><li><strong>Software em funcionamento</strong> mais que documentação abrangente</li><li><strong>Colaboração com o cliente</strong> mais que negociação de contratos</li><li><strong>Responder a mudanças</strong> mais que seguir um plano</li></ul><div class="warn-box"><p>⚠️ <strong>Atenção:</strong> "mais que" não significa "em vez de". A direita tem valor, mas a esquerda é mais valorizada.</p></div><h4>Os 12 princípios ágeis</h4><p>Complementam os 4 valores com diretrizes práticas. Os mais importantes para gestores: entrega contínua de valor, mudança é bem-vinda, times motivados entregam mais, e simplicidade é essencial.</p></div>` },
+
+  lesson_agil_2: { title:'Scrum vs Kanban', module:'Módulo 1 — Mentalidade Ágil', duration:'18 min', type:'Slides', html:`<div class="slides-container" id="slides_agil_2"><div class="slide active"><div class="slide-num">Slide 1 de 5</div><div class="slide-big-icon">⚡</div><h4>Scrum vs Kanban</h4><p>Duas das abordagens ágeis mais usadas. Cada uma tem contextos onde brilha mais. Vamos entender as diferenças.</p></div><div class="slide"><div class="slide-num">Slide 2 de 5</div><h4>Scrum — Características</h4><ul><li>Trabalho em ciclos fixos (Sprints)</li><li>Papéis definidos (PO, SM, Devs)</li><li>Cerimônias obrigatórias</li><li>Velocidade como métrica principal</li><li>Ideal para: times de produto, desenvolvimento de features</li></ul></div><div class="slide"><div class="slide-num">Slide 3 de 5</div><h4>Kanban — Características</h4><ul><li>Fluxo contínuo — sem sprints</li><li>Sem papéis obrigatórios</li><li>Limites de WIP (Work in Progress)</li><li>Lead Time como métrica principal</li><li>Ideal para: suporte, manutenção, fluxo imprevisível</li></ul></div><div class="slide"><div class="slide-num">Slide 4 de 5</div><h4>O quadro Kanban</h4><ul><li>📋 <strong>To Do</strong> — tarefas priorizadas</li><li>🔄 <strong>In Progress</strong> — em andamento (WIP limitado)</li><li>👀 <strong>In Review</strong> — aguardando revisão</li><li>✅ <strong>Done</strong> — concluídas</li><li>WIP Limit: ex. máximo 3 cards em "In Progress" por vez</li></ul></div><div class="slide"><div class="slide-num">Slide 5 de 5</div><h4>Quando usar cada um?</h4><p><strong style="color:#a78bfa">Use Scrum:</strong> quando há planejamento de produto, roadmap e necessidade de cadência regular de entregas.</p><p style="margin-top:0.75rem"><strong style="color:var(--accent3)">Use Kanban:</strong> quando o trabalho chega de forma imprevisível e a prioridade é resolver o mais rápido possível.</p><p style="margin-top:0.75rem"><strong style="color:var(--warn)">Use Scrumban:</strong> híbrido — sprints do Scrum + limites de WIP do Kanban.</p></div><div class="slides-nav"><button class="btn-slide" onclick="prevSlide('slides_agil_2')" id="prev_slides_agil_2" disabled>← Anterior</button><span class="slide-counter" id="counter_slides_agil_2">1 / 5</span><button class="btn-slide" onclick="nextSlide('slides_agil_2')" id="next_slides_agil_2">Próximo →</button><div class="slide-dots" id="dots_slides_agil_2"></div></div></div>` },
+
+  lesson_agil_3: { title:'O que são OKRs?', module:'Módulo 2 — OKRs', duration:'15 min', type:'Leitura', html:`<div class="content-block"><h3>OKR — Objectives and Key Results</h3><p>OKR é um framework de definição e acompanhamento de metas criado na Intel e popularizado pelo Google. Conecta os objetivos estratégicos da empresa ao trabalho do time.</p><div class="highlight-box"><p><strong>Fórmula:</strong> Eu vou <strong style="color:var(--accent)">[Objetivo]</strong> medido por <strong style="color:var(--accent3)">[Key Results]</strong>.</p></div><h4>Objetivo (O)</h4><p>O QUE você quer alcançar. Deve ser inspirador, qualitativo e com prazo definido (geralmente trimestral).</p><h4>Key Results (KR)</h4><p>COMO você sabe que alcançou. Devem ser mensuráveis, com número, de 3 a 5 por objetivo.</p><div class="example-card"><div class="example-label">Exemplo real</div><p><strong>Objetivo:</strong> Tornar nosso app a referência em experiência do usuário no setor.<br><br><strong>KR1:</strong> Aumentar o NPS de 32 para 70.<br><strong>KR2:</strong> Reduzir o churn mensal de 8% para 3%.<br><strong>KR3:</strong> Atingir 4,7 estrelas na App Store com 1.000+ avaliações.</p></div><div class="tip-box"><p>💡 <strong>Regra dos 70%:</strong> se você atingiu 100% dos seus OKRs, provavelmente foram pouco ambiciosos. OKRs devem ser desafiadores — 70% de alcance já é considerado sucesso.</p></div></div>` },
+
+  lesson_agil_4: { title:'Criando seus primeiros OKRs', module:'Módulo 2 — OKRs', duration:'20 min', type:'Slides', html:`<div class="slides-container" id="slides_agil_4"><div class="slide active"><div class="slide-num">Slide 1 de 4</div><div class="slide-big-icon">🎯</div><h4>Criando OKRs que funcionam</h4><p>A maioria dos times erra na criação dos OKRs. Veja como fazer do jeito certo.</p></div><div class="slide"><div class="slide-num">Slide 2 de 4</div><h4>Os erros mais comuns</h4><ul><li>❌ KR como tarefa: "Implementar feature de pagamento Pix"</li><li>❌ KR sem número: "Melhorar a performance do sistema"</li><li>❌ Objetivos vagos: "Ser mais ágil"</li><li>❌ Muitos OKRs: mais de 5 objetivos por trimestre</li><li>❌ OKRs impostos: sem participação do time</li></ul></div><div class="slide"><div class="slide-num">Slide 3 de 4</div><h4>Checklist do bom OKR</h4><ul><li>✅ Objetivo inspira e desafia o time</li><li>✅ Cada KR tem um número claro</li><li>✅ KRs são resultados, não tarefas</li><li>✅ Máximo 3-5 KRs por objetivo</li><li>✅ Time participou da criação</li><li>✅ Check-in semanal ou quinzenal planejado</li></ul></div><div class="slide"><div class="slide-num">Slide 4 de 4</div><h4>Cadência dos OKRs</h4><ul><li>🏢 <strong>Empresa:</strong> OKRs anuais e trimestrais</li><li>👥 <strong>Time:</strong> OKRs trimestrais alinhados à empresa</li><li>👤 <strong>Individual:</strong> opcional, mas poderoso</li><li>📅 <strong>Check-in:</strong> reunião rápida semanal de acompanhamento</li><li>📊 <strong>Review:</strong> ao final do trimestre, celebrar e aprender</li></ul></div><div class="slides-nav"><button class="btn-slide" onclick="prevSlide('slides_agil_4')" id="prev_slides_agil_4" disabled>← Anterior</button><span class="slide-counter" id="counter_slides_agil_4">1 / 4</span><button class="btn-slide" onclick="nextSlide('slides_agil_4')" id="next_slides_agil_4">Próximo →</button><div class="slide-dots" id="dots_slides_agil_4"></div></div></div>` },
+
+  quiz_agil_1: { title:'Quiz: OKRs', module:'Módulo 2 — OKRs', duration:'5 min', type:'Quiz', html:`<div class="quiz-block" id="qa1"><h4>1. Qual das opções é um bom Key Result?</h4><ul class="quiz-options"><li class="quiz-option" onclick="answerQuiz('qa1',0,1)"><span class="opt-letter">A</span> "Implementar o módulo de relatórios"</li><li class="quiz-option" onclick="answerQuiz('qa1',1,1)"><span class="opt-letter">B</span> "Aumentar a receita mensal de R$50k para R$80k"</li><li class="quiz-option" onclick="answerQuiz('qa1',2,1)"><span class="opt-letter">C</span> "Melhorar o produto"</li><li class="quiz-option" onclick="answerQuiz('qa1',3,1)"><span class="opt-letter">D</span> "Fazer reuniões semanais de alinhamento"</li></ul><div class="quiz-feedback" id="fb_qa1"></div></div><div class="quiz-block" id="qa2"><h4>2. Atingir quantos % dos OKRs é considerado sucesso?</h4><ul class="quiz-options"><li class="quiz-option" onclick="answerQuiz('qa2',0,1)"><span class="opt-letter">A</span> 100%</li><li class="quiz-option" onclick="answerQuiz('qa2',1,1)"><span class="opt-letter">B</span> 70%</li><li class="quiz-option" onclick="answerQuiz('qa2',2,1)"><span class="opt-letter">C</span> 50%</li><li class="quiz-option" onclick="answerQuiz('qa2',3,1)"><span class="opt-letter">D</span> 90%</li></ul><div class="quiz-feedback" id="fb_qa2"></div></div>` },
+
+  lesson_agil_5: { title:'Velocity, Lead Time e Cycle Time', module:'Módulo 3 — Métricas', duration:'20 min', type:'Leitura', html:`<div class="content-block"><h3>Métricas ágeis essenciais</h3><p>Métricas ágeis ajudam o time a entender sua capacidade, identificar gargalos e melhorar continuamente. Não servem para punir ou comparar times.</p><h4>⚡ Velocity (Velocidade)</h4><p>Quantidade de trabalho que um time entrega por Sprint, geralmente em Story Points. Usado para prever quanto o time consegue fazer em futuros Sprints.</p><div class="example-card"><div class="example-label">Exemplo</div><p>Time entregou 34 pontos no Sprint 1, 38 no Sprint 2 e 36 no Sprint 3. Velocity média ≈ 36 pontos/sprint.</p></div><h4>⏱️ Lead Time</h4><p>Tempo total desde a criação do item no backlog até sua entrega ao cliente. Mede a visão do cliente: quanto tempo demora para minha solicitação chegar?</p><h4>🔄 Cycle Time</h4><p>Tempo desde que o time começa a trabalhar num item até sua entrega. Mais curto que o Lead Time — não conta o tempo de espera no backlog.</p><div class="highlight-box"><p><strong>Relação:</strong> Lead Time = Tempo de espera no backlog + Cycle Time</p></div><div class="tip-box"><p>💡 <strong>Foco em Cycle Time</strong> para melhorar o fluxo de trabalho. Quanto menor o Cycle Time, mais rápido o feedback e mais valor entregue.</p></div><h4>Outras métricas importantes</h4><ul><li><strong>Throughput:</strong> número de itens entregues por período</li><li><strong>Bug rate:</strong> percentual de stories com bugs pós-entrega</li><li><strong>Team happiness:</strong> NPS interno do time (muito poderoso)</li></ul></div>` },
+
+  quiz_agil_2: { title:'Quiz Final — Gestão Ágil', module:'Módulo 3 — Métricas', duration:'6 min', type:'Quiz', html:`<div class="quiz-block" id="qag1"><h4>1. O que o Cycle Time mede?</h4><ul class="quiz-options"><li class="quiz-option" onclick="answerQuiz('qag1',0,2)"><span class="opt-letter">A</span> Tempo desde a criação do item até a entrega ao cliente</li><li class="quiz-option" onclick="answerQuiz('qag1',1,2)"><span class="opt-letter">B</span> Tempo desde que o time começa a trabalhar até a entrega</li><li class="quiz-option" onclick="answerQuiz('qag1',2,2)"><span class="opt-letter">C</span> Número de itens entregues por sprint</li><li class="quiz-option" onclick="answerQuiz('qag1',3,2)"><span class="opt-letter">D</span> Quantidade de bugs por release</li></ul><div class="quiz-feedback" id="fb_qag1"></div></div><div class="quiz-block" id="qag2"><h4>2. Qual framework é mais recomendado para trabalho de suporte (demanda imprevisível)?</h4><ul class="quiz-options"><li class="quiz-option" onclick="answerQuiz('qag2',0,1)"><span class="opt-letter">A</span> Scrum</li><li class="quiz-option" onclick="answerQuiz('qag2',1,1)"><span class="opt-letter">B</span> Kanban</li><li class="quiz-option" onclick="answerQuiz('qag2',2,1)"><span class="opt-letter">C</span> Waterfall</li><li class="quiz-option" onclick="answerQuiz('qag2',3,1)"><span class="opt-letter">D</span> SAFe</li></ul><div class="quiz-feedback" id="fb_qag2"></div></div>` },
+
+  // ── PRODUCT OWNER ──
+  lesson_po_1: { title:'O que faz um Product Owner?', module:'Módulo 1 — O Papel do PO', duration:'15 min', type:'Leitura', html:`<div class="content-block"><h3>O Product Owner no centro do produto</h3><p>O PO é o responsável por maximizar o valor do produto resultante do trabalho do time Scrum. É a voz do cliente dentro do time e a voz do time para os stakeholders.</p><h4>Responsabilidades do dia a dia</h4><ul><li>Gerenciar e priorizar o Product Backlog</li><li>Refinar itens com o time de desenvolvimento</li><li>Definir e comunicar a visão do produto</li><li>Participar de reuniões com stakeholders</li><li>Aceitar ou rejeitar entregas na Sprint Review</li><li>Tomar decisões sobre escopo e prioridade</li></ul><div class="highlight-box"><p><strong>Frase chave:</strong> O PO decide O QUE construir e em qual ordem. O time decide COMO construir. Essa separação é fundamental para o Scrum funcionar.</p></div><h4>Habilidades essenciais do PO</h4><ul><li>Comunicação clara com públicos técnicos e não-técnicos</li><li>Pensamento analítico para priorização baseada em dados</li><li>Visão de negócio e entendimento do mercado</li><li>Capacidade de dizer NÃO (e explicar o porquê)</li><li>Empatia com o usuário final</li></ul><div class="tip-box"><p>💡 PO é uma das carreiras que mais cresce em tech no Brasil. Salário médio: R$8.000 a R$18.000 dependendo da seniority e empresa.</p></div></div>` },
+
+  lesson_po_2: { title:'PO vs PM vs Scrum Master', module:'Módulo 1 — O Papel do PO', duration:'15 min', type:'Slides', html:`<div class="slides-container" id="slides_po_2"><div class="slide active"><div class="slide-num">Slide 1 de 4</div><div class="slide-big-icon">🤔</div><h4>Confusão comum no mercado</h4><p>PO, PM e Scrum Master são papéis diferentes mas frequentemente confundidos. Vamos clarificar de uma vez por todas.</p></div><div class="slide"><div class="slide-num">Slide 2 de 4</div><h4>Product Owner (PO)</h4><ul><li>Papel dentro do framework Scrum</li><li>Foco: maximizar valor do produto no nível de time</li><li>Gere o backlog e prioriza histórias</li><li>Trabalha junto ao time de desenvolvimento</li><li>Mais operacional, no dia a dia do time</li></ul></div><div class="slide"><div class="slide-num">Slide 3 de 4</div><h4>Product Manager (PM)</h4><ul><li>Papel de mercado (não exclusivo do Scrum)</li><li>Foco: estratégia do produto a médio/longo prazo</li><li>Define roadmap, pesquisa mercado, concorrentes</li><li>Gerencia múltiplos times ou produtos</li><li>Mais estratégico, menos operacional</li></ul></div><div class="slide"><div class="slide-num">Slide 4 de 4</div><h4>Scrum Master vs PO</h4><p><strong style="color:#a78bfa">Scrum Master:</strong> cuida do PROCESSO. Garante que o Scrum funcione, remove impedimentos, facilita cerimônias.</p><p style="margin-top:0.75rem"><strong style="color:var(--accent)">Product Owner:</strong> cuida do PRODUTO. Decide o que construir, prioriza, representa o cliente.</p><p style="margin-top:0.75rem"><em style="color:var(--muted)">Algumas empresas fundem os papéis — mas é recomendado mantê-los separados.</em></p></div><div class="slides-nav"><button class="btn-slide" onclick="prevSlide('slides_po_2')" id="prev_slides_po_2" disabled>← Anterior</button><span class="slide-counter" id="counter_slides_po_2">1 / 4</span><button class="btn-slide" onclick="nextSlide('slides_po_2')" id="next_slides_po_2">Próximo →</button><div class="slide-dots" id="dots_slides_po_2"></div></div></div>` },
+
+  lesson_po_3: { title:'Framework RICE e MoSCoW', module:'Módulo 2 — Priorização', duration:'20 min', type:'Leitura', html:`<div class="content-block"><h3>Como priorizar sem ser achismo?</h3><p>Priorizar é a habilidade mais crítica do PO. Frameworks ajudam a transformar intuição em decisão baseada em dados.</p><h4>🍚 Framework RICE</h4><p>Calcula uma pontuação para cada item usando 4 fatores:</p><ul><li><strong>R</strong>each (Alcance): quantos usuários impacta por período?</li><li><strong>I</strong>mpact (Impacto): qual o impacto em quem usa? (0.25 a 3)</li><li><strong>C</strong>onfidence (Confiança): quão certo você está? (50% a 100%)</li><li><strong>E</strong>ffort (Esforço): quantas pessoas/semana?</li></ul><div class="example-card"><div class="example-label">Fórmula RICE</div><p><strong>RICE = (Reach × Impact × Confidence) / Effort</strong><br><br>Feature A: (1000 × 2 × 0.8) / 3 = <strong>533</strong><br>Feature B: (500 × 3 × 0.9) / 1 = <strong>1350</strong> ← prioridade!</p></div><h4>🗓️ Framework MoSCoW</h4><ul><li><strong>Must have:</strong> imprescindível — sem isso, não tem produto</li><li><strong>Should have:</strong> importante, mas dá para lançar sem</li><li><strong>Could have:</strong> desejável, entra se houver tempo</li><li><strong>Won't have:</strong> fora de escopo agora (não é nunca)</li></ul><div class="tip-box"><p>💡 Use RICE para comparar features dentro de um épico. Use MoSCoW para definir escopo de MVP ou release.</p></div></div>` },
+
+  lesson_po_4: { title:'Refinamento de backlog', module:'Módulo 2 — Priorização', duration:'15 min', type:'Slides', html:`<div class="slides-container" id="slides_po_4"><div class="slide active"><div class="slide-num">Slide 1 de 4</div><div class="slide-big-icon">🔧</div><h4>Refinamento do Backlog</h4><p>O refinamento (grooming) é o processo contínuo de adicionar detalhes, estimativas e ordem aos itens do Product Backlog.</p></div><div class="slide"><div class="slide-num">Slide 2 de 4</div><h4>O que acontece no refinamento?</h4><ul><li>PO apresenta os próximos itens priorizados</li><li>Time faz perguntas para entender o contexto</li><li>Critérios de aceitação são discutidos e refinados</li><li>Items são estimados (Story Points ou T-Shirt Sizes)</li><li>Itens grandes são quebrados em menores</li></ul></div><div class="slide"><div class="slide-num">Slide 3 de 4</div><h4>Estimativas: Planning Poker</h4><p>Técnica colaborativa de estimativa. Cada membro vota simultaneamente em Story Points (sequência Fibonacci: 1, 2, 3, 5, 8, 13, 21).</p><ul><li>Divergências revelam diferentes entendimentos</li><li>Discussão alinha o time e melhora a estimativa</li><li>Não é para medir performance — é para planejar</li></ul></div><div class="slide"><div class="slide-num">Slide 4 de 4</div><h4>Definition of Ready (DoR)</h4><p>Critérios que um item deve ter para entrar em um Sprint. Complemento do DoD.</p><ul><li>✅ User Story no formato correto</li><li>✅ Critérios de aceitação definidos</li><li>✅ Dependências identificadas</li><li>✅ Estimativa realizada pelo time</li><li>✅ PO disponível para dúvidas</li></ul></div><div class="slides-nav"><button class="btn-slide" onclick="prevSlide('slides_po_4')" id="prev_slides_po_4" disabled>← Anterior</button><span class="slide-counter" id="counter_slides_po_4">1 / 4</span><button class="btn-slide" onclick="nextSlide('slides_po_4')" id="next_slides_po_4">Próximo →</button><div class="slide-dots" id="dots_slides_po_4"></div></div></div>` },
+
+  quiz_po_1: { title:'Quiz: Priorização', module:'Módulo 2 — Priorização', duration:'5 min', type:'Quiz', html:`<div class="quiz-block" id="qpo1"><h4>1. No MoSCoW, um item "Should Have" significa:</h4><ul class="quiz-options"><li class="quiz-option" onclick="answerQuiz('qpo1',0,1)"><span class="opt-letter">A</span> Imprescindível — sem isso não tem produto</li><li class="quiz-option" onclick="answerQuiz('qpo1',1,1)"><span class="opt-letter">B</span> Importante, mas dá para lançar sem</li><li class="quiz-option" onclick="answerQuiz('qpo1',2,1)"><span class="opt-letter">C</span> Fora de escopo desta versão</li><li class="quiz-option" onclick="answerQuiz('qpo1',3,1)"><span class="opt-letter">D</span> Desejável, entra se houver tempo</li></ul><div class="quiz-feedback" id="fb_qpo1"></div></div><div class="quiz-block" id="qpo2"><h4>2. Na fórmula RICE, o que representa o "C"?</h4><ul class="quiz-options"><li class="quiz-option" onclick="answerQuiz('qpo2',0,2)"><span class="opt-letter">A</span> Custo</li><li class="quiz-option" onclick="answerQuiz('qpo2',1,2)"><span class="opt-letter">B</span> Complexidade</li><li class="quiz-option" onclick="answerQuiz('qpo2',2,2)"><span class="opt-letter">C</span> Confiança</li><li class="quiz-option" onclick="answerQuiz('qpo2',3,2)"><span class="opt-letter">D</span> Cobertura</li></ul><div class="quiz-feedback" id="fb_qpo2"></div></div>` },
+
+  lesson_po_5: { title:'Definindo um MVP', module:'Módulo 3 — MVP e Stakeholders', duration:'18 min', type:'Leitura', html:`<div class="content-block"><h3>MVP — Minimum Viable Product</h3><p>O MVP é a versão mais simples de um produto que permite aprender o máximo com o mínimo de esforço. Não é um produto incompleto — é um produto completo com escopo reduzido.</p><div class="highlight-box"><p><strong>Eric Ries (Lean Startup):</strong> "O MVP é aquela versão de um novo produto que permite a um time coletar a máxima quantidade de aprendizado validado sobre clientes com o menor esforço."</p></div><h4>O que o MVP NÃO é</h4><ul><li>❌ Produto cheio de bugs e incompleto</li><li>❌ Desculpa para entregar qualidade ruim</li><li>❌ Produto sem valor para o usuário</li><li>❌ Apenas um protótipo ou mockup</li></ul><h4>Como definir o MVP</h4><ul><li>1. Identifique o problema central do usuário</li><li>2. Liste todas as features possíveis</li><li>3. Aplique MoSCoW — os Must Haves são candidatos ao MVP</li><li>4. Questione: o usuário consegue resolver seu problema principal com isso?</li><li>5. Lance, meça, aprenda, repita</li></ul><div class="example-card"><div class="example-label">Exemplo clássico: Uber</div><p>MVP do Uber em 2009: app simples em SF, apenas iPhone, sem estimativa de preço, sem cartão de crédito. Suficiente para validar: "pessoas pagariam por um táxi chamado pelo app?"</p></div></div>` },
+
+  quiz_po_2: { title:'Quiz Final — Product Owner', module:'Módulo 3 — MVP e Stakeholders', duration:'5 min', type:'Quiz', html:`<div class="quiz-block" id="qpf1"><h4>1. O MVP tem como objetivo principal:</h4><ul class="quiz-options"><li class="quiz-option" onclick="answerQuiz('qpf1',0,1)"><span class="opt-letter">A</span> Lançar o produto mais barato possível</li><li class="quiz-option" onclick="answerQuiz('qpf1',1,1)"><span class="opt-letter">B</span> Coletar aprendizado validado com mínimo esforço</li><li class="quiz-option" onclick="answerQuiz('qpf1',2,1)"><span class="opt-letter">C</span> Entregar todas as features planejadas</li><li class="quiz-option" onclick="answerQuiz('qpf1',3,1)"><span class="opt-letter">D</span> Satisfazer todos os stakeholders</li></ul><div class="quiz-feedback" id="fb_qpf1"></div></div><div class="quiz-block" id="qpf2"><h4>2. Quem tem a palavra final sobre o que entra no backlog?</h4><ul class="quiz-options"><li class="quiz-option" onclick="answerQuiz('qpf2',0,0)"><span class="opt-letter">A</span> Product Owner</li><li class="quiz-option" onclick="answerQuiz('qpf2',1,0)"><span class="opt-letter">B</span> Scrum Master</li><li class="quiz-option" onclick="answerQuiz('qpf2',2,0)"><span class="opt-letter">C</span> Tech Lead</li><li class="quiz-option" onclick="answerQuiz('qpf2',3,0)"><span class="opt-letter">D</span> Stakeholders</li></ul><div class="quiz-feedback" id="fb_qpf2"></div></div>` },
+
+  // ── LINKEDIN ──
+  lesson_li_1: { title:'Headline que converte', module:'Módulo 1 — Perfil Estratégico', duration:'15 min', type:'Leitura', html:`<div class="content-block"><h3>A headline é o seu cartão de visitas digital</h3><p>A headline do LinkedIn aparece em buscas, comentários e conexões. É a primeira coisa que um recrutador vê — e você tem menos de 3 segundos para prender a atenção.</p><h4>Fórmula da headline que funciona</h4><div class="highlight-box"><p><strong>[Cargo/Área] | [Especialidade ou tecnologia] | [Proposta de valor ou diferencial]</strong></p></div><div class="example-card"><div class="example-label">❌ Ruim</div><p>Estudante de TI | Em busca de oportunidades</p></div><div class="example-card"><div class="example-label">✅ Bom (mesmo sem experiência)</div><p>Analista de Requisitos Jr | Scrum & UML | Apaixonada por transformar necessidades em soluções digitais</p></div><h4>Palavras que recrutadores buscam</h4><ul><li>Analista de Requisitos, Business Analyst, PO, Product Owner</li><li>Scrum, Agile, Kanban, SAFe</li><li>UML, BDD, User Stories, Backlog</li><li>SQL, Python, Power BI (se tiver)</li><li>Jira, Confluence, Azure DevOps</li></ul><div class="tip-box"><p>💡 Coloque palavras-chave da área desejada mesmo que ainda esteja estudando. O LinkedIn usa essas palavras para ranquear seu perfil nas buscas de recrutadores.</p></div></div>` },
+
+  lesson_li_2: { title:'Resumo e experiências', module:'Módulo 1 — Perfil Estratégico', duration:'18 min', type:'Slides', html:`<div class="slides-container" id="slides_li_2"><div class="slide active"><div class="slide-num">Slide 1 de 5</div><div class="slide-big-icon">✍️</div><h4>Seções que fazem a diferença</h4><p>Resumo, experiências e competências são as 3 seções mais lidas por recrutadores. Veja como otimizar cada uma.</p></div><div class="slide"><div class="slide-num">Slide 2 de 5</div><h4>Resumo (Sobre)</h4><ul><li>Máximo 3 parágrafos curtos</li><li>Parágrafo 1: quem você é e o que busca</li><li>Parágrafo 2: suas habilidades e tecnologias</li><li>Parágrafo 3: chamada para ação (convite para conectar)</li><li>Use emojis com moderação para facilitar leitura</li></ul></div><div class="slide"><div class="slide-num">Slide 3 de 5</div><h4>Experiências — Formato CAR</h4><p>Para cada cargo/projeto, use: <strong>Contexto → Ação → Resultado</strong></p><div style="font-size:0.82rem;margin-top:0.75rem;color:#cbd5e1"><p>❌ "Responsável por analisar requisitos"</p><p style="margin-top:0.5rem">✅ "Levantei e documentei 40+ requisitos para sistema de gestão usando entrevistas e workshops, reduzindo retrabalho em 30%"</p></div></div><div class="slide"><div class="slide-num">Slide 4 de 5</div><h4>Sem experiência formal? Sem problema.</h4><ul><li>Projetos acadêmicos como experiência</li><li>Freelances e trabalhos voluntários contam</li><li>Contribuições em projetos open source</li><li>Cursos com projetos práticos (descreva o projeto!)</li><li>Hackathons e desafios técnicos</li></ul></div><div class="slide"><div class="slide-num">Slide 5 de 5</div><h4>Competências (Skills)</h4><ul><li>Adicione até 50 habilidades relevantes</li><li>Peça validações para colegas e professores</li><li>As 3 principais aparecem no destaque do perfil</li><li>Faça os testes de avaliação do LinkedIn (grátis)</li><li>Ordene: coloque as mais relevantes primeiro</li></ul></div><div class="slides-nav"><button class="btn-slide" onclick="prevSlide('slides_li_2')" id="prev_slides_li_2" disabled>← Anterior</button><span class="slide-counter" id="counter_slides_li_2">1 / 5</span><button class="btn-slide" onclick="nextSlide('slides_li_2')" id="next_slides_li_2">Próximo →</button><div class="slide-dots" id="dots_slides_li_2"></div></div></div>` },
+
+  lesson_li_3: { title:'Portfólio sem experiência', module:'Módulo 2 — Visibilidade', duration:'15 min', type:'Leitura', html:`<div class="content-block"><h3>Você tem mais para mostrar do que imagina</h3><p>"Não tenho experiência" é o maior mito de quem tenta entrar em tech. Experiência profissional formal é apenas uma das formas de demonstrar competência.</p><h4>O que pode entrar no portfólio</h4><ul><li>Projetos de cursos (documentação, análise, diagramas)</li><li>Trabalhos da faculdade com contexto de negócio</li><li>Análise de um app/sistema que você usa (como melhoraria?)</li><li>User Stories escritas para um produto imaginário</li><li>Mapa de jornada do usuário de um serviço real</li><li>Backlog priorizado com justificativa de negócio</li></ul><div class="example-card"><div class="example-label">Ideia de projeto portfólio</div><p>Escolha um app popular (iFood, Nubank, etc). Faça uma análise: identifique um problema de UX, escreva 5 User Stories para resolvê-lo com critérios de aceitação. Documente tudo no Notion ou GitHub. Compartilhe no LinkedIn.</p></div><div class="tip-box"><p>💡 Recrutadores não querem perfeição — querem ver como você pensa. Um projeto simples bem documentado vale mais que nenhum projeto.</p></div></div>` },
+
+  lesson_li_4: { title:'Networking ativo e passivo', module:'Módulo 2 — Visibilidade', duration:'15 min', type:'Slides', html:`<div class="slides-container" id="slides_li_4"><div class="slide active"><div class="slide-num">Slide 1 de 4</div><div class="slide-big-icon">🤝</div><h4>Networking no LinkedIn</h4><p>A maioria das vagas não é anunciada publicamente. Networking é a forma mais eficaz de acessar essas oportunidades ocultas.</p></div><div class="slide"><div class="slide-num">Slide 2 de 4</div><h4>Networking Passivo</h4><ul><li>Perfil otimizado — recrutadores te encontram</li><li>Publicar conteúdo relevante 2-3x por semana</li><li>Comentar em posts de referências da área</li><li>Curtir e compartilhar com reflexão pessoal</li><li>Aparecer nas buscas do LinkedIn (palavras-chave)</li></ul></div><div class="slide"><div class="slide-num">Slide 3 de 4</div><h4>Networking Ativo</h4><ul><li>Conectar com 5 profissionais da área por semana</li><li>Mensagem personalizada ao conectar (nunca genérica!)</li><li>Entrevistas informais: "posso te chamar para aprender sobre sua trajetória?"</li><li>Participar de comunidades (Discord, grupos LinkedIn)</li><li>Eventos presenciais e meetups de tech</li></ul></div><div class="slide"><div class="slide-num">Slide 4 de 4</div><h4>Mensagem de conexão que funciona</h4><div style="background:rgba(0,229,255,0.04);border:1px solid rgba(0,229,255,0.15);border-radius:8px;padding:1rem;font-size:0.82rem;color:#cbd5e1">"Olá [nome]! Vi seu post sobre [assunto específico] e me identifiquei muito. Estou em transição para a área de [área] e sua trajetória é inspiradora. Posso fazer parte da sua rede?"</div><div style="margin-top:0.75rem;font-size:0.78rem;color:var(--muted)">Específico + Genuíno + Breve = conexão aceita ✓</div></div><div class="slides-nav"><button class="btn-slide" onclick="prevSlide('slides_li_4')" id="prev_slides_li_4" disabled>← Anterior</button><span class="slide-counter" id="counter_slides_li_4">1 / 4</span><button class="btn-slide" onclick="nextSlide('slides_li_4')" id="next_slides_li_4">Próximo →</button><div class="slide-dots" id="dots_slides_li_4"></div></div></div>` },
+
+  quiz_li_1: { title:'Quiz Final — LinkedIn para Tech', module:'Módulo 2 — Visibilidade', duration:'5 min', type:'Quiz', html:`<div class="quiz-block" id="qli1"><h4>1. Qual é o formato recomendado para descrever experiências no LinkedIn?</h4><ul class="quiz-options"><li class="quiz-option" onclick="answerQuiz('qli1',0,1)"><span class="opt-letter">A</span> Lista de responsabilidades genéricas</li><li class="quiz-option" onclick="answerQuiz('qli1',1,1)"><span class="opt-letter">B</span> Contexto → Ação → Resultado (CAR)</li><li class="quiz-option" onclick="answerQuiz('qli1',2,1)"><span class="opt-letter">C</span> Apenas o cargo e período</li><li class="quiz-option" onclick="answerQuiz('qli1',3,1)"><span class="opt-letter">D</span> Cópia da descrição da vaga</li></ul><div class="quiz-feedback" id="fb_qli1"></div></div><div class="quiz-block" id="qli2"><h4>2. O networking passivo no LinkedIn inclui:</h4><ul class="quiz-options"><li class="quiz-option" onclick="answerQuiz('qli2',0,2)"><span class="opt-letter">A</span> Enviar mensagens para recrutadores</li><li class="quiz-option" onclick="answerQuiz('qli2',1,2)"><span class="opt-letter">B</span> Publicar conteúdo e otimizar o perfil</li><li class="quiz-option" onclick="answerQuiz('qli2',2,2)"><span class="opt-letter">C</span> Fazer entrevistas informais</li><li class="quiz-option" onclick="answerQuiz('qli2',3,2)"><span class="opt-letter">D</span> Participar de eventos presenciais</li></ul><div class="quiz-feedback" id="fb_qli2"></div></div>` },
+
+  // ── ENTREVISTAS ──
+  lesson_ent_1: { title:'Mapeando empresas e vagas', module:'Módulo 1 — Preparação', duration:'15 min', type:'Leitura', html:`<div class="content-block"><h3>Estratégia antes de sair aplicando</h3><p>Aplicar para 100 vagas sem estratégia é menos eficaz do que aplicar para 20 com foco e preparação. A pesquisa pré-candidatura é o que separa quem passa das fases iniciais.</p><h4>Como mapear empresas</h4><ul><li>Liste 20-30 empresas que te interessam (cultura, produto, crescimento)</li><li>Pesquise Glassdoor, Linkedin e Reclame Aqui</li><li>Siga as empresas no LinkedIn — ative notificações</li><li>Identifique quem trabalha lá e conecte-se</li><li>Leia blog técnico, press releases e redes sociais</li></ul><h4>Como analisar uma vaga</h4><ul><li>Destaque as palavras-chave dos requisitos</li><li>Identifique os "must haves" vs "nice to haves"</li><li>Se tiver 70% dos requisitos, aplique</li><li>Adapte currículo e carta de apresentação para cada vaga</li><li>Pesquise a empresa antes de qualquer entrevista</li></ul><div class="tip-box"><p>💡 <strong>Insider tip:</strong> empresas de tech geralmente listam mais requisitos do que realmente esperam. Se você tem 70% da lista, é candidata/o legítima/o.</p></div></div>` },
+
+  lesson_ent_2: { title:'Método STAR na prática', module:'Módulo 1 — Preparação', duration:'20 min', type:'Slides', html:`<div class="slides-container" id="slides_ent_2"><div class="slide active"><div class="slide-num">Slide 1 de 5</div><div class="slide-big-icon">⭐</div><h4>Método STAR</h4><p>A estrutura mais usada para responder perguntas comportamentais em entrevistas. Organiza sua resposta de forma clara e convincente.</p></div><div class="slide"><div class="slide-num">Slide 2 de 5</div><h4>O que é STAR?</h4><ul><li>🎬 <strong>S</strong>ituation: qual era o contexto?</li><li>🎯 <strong>T</strong>ask: qual era sua responsabilidade?</li><li>⚙️ <strong>A</strong>ction: o que você fez especificamente?</li><li>✅ <strong>R</strong>esult: qual foi o resultado mensurável?</li></ul></div><div class="slide"><div class="slide-num">Slide 3 de 5</div><h4>Exemplo: "Fale sobre um conflito no time"</h4><p><strong>S:</strong> "Em um projeto, havia discordância entre dev e designer sobre prazo de uma feature."</p><p><strong>T:</strong> "Como analista, cabia a mim facilitar o alinhamento entre as partes."</p><p><strong>A:</strong> "Organizei uma reunião de 30min com os dois para mapear as dependências e propus uma solução incremental."</p><p><strong>R:</strong> "Entregamos a feature em 2 etapas, cumprindo o prazo principal sem comprometer a qualidade."</p></div><div class="slide"><div class="slide-num">Slide 4 de 5</div><h4>Perguntas comportamentais comuns</h4><ul><li>"Me fale de uma vez que você errou e o que aprendeu"</li><li>"Como você lida com prazos impossíveis?"</li><li>"Dê um exemplo de quando precisou influenciar sem ter autoridade"</li><li>"Como você prioriza quando tudo é urgente?"</li><li>"Fale de um projeto que não deu certo"</li></ul></div><div class="slide"><div class="slide-num">Slide 5 de 5</div><h4>Prepare seu banco de STARs</h4><p>Antes da entrevista, escreva 5-8 histórias STAR cobrindo:</p><ul><li>Liderança e influência</li><li>Conflito e resolução</li><li>Erro e aprendizado</li><li>Resultado sob pressão</li><li>Colaboração e trabalho em equipe</li></ul></div><div class="slides-nav"><button class="btn-slide" onclick="prevSlide('slides_ent_2')" id="prev_slides_ent_2" disabled>← Anterior</button><span class="slide-counter" id="counter_slides_ent_2">1 / 5</span><button class="btn-slide" onclick="nextSlide('slides_ent_2')" id="next_slides_ent_2">Próximo →</button><div class="slide-dots" id="dots_slides_ent_2"></div></div></div>` },
+
+  quiz_ent_1: { title:'Quiz: Método STAR', module:'Módulo 1 — Preparação', duration:'5 min', type:'Quiz', html:`<div class="quiz-block" id="qe1"><h4>1. No método STAR, o "R" representa:</h4><ul class="quiz-options"><li class="quiz-option" onclick="answerQuiz('qe1',0,3)"><span class="opt-letter">A</span> Responsabilidade</li><li class="quiz-option" onclick="answerQuiz('qe1',1,3)"><span class="opt-letter">B</span> Reflexão</li><li class="quiz-option" onclick="answerQuiz('qe1',2,3)"><span class="opt-letter">C</span> Relacionamento</li><li class="quiz-option" onclick="answerQuiz('qe1',3,3)"><span class="opt-letter">D</span> Resultado</li></ul><div class="quiz-feedback" id="fb_qe1"></div></div><div class="quiz-block" id="qe2"><h4>2. Se você tem 70% dos requisitos de uma vaga, deve:</h4><ul class="quiz-options"><li class="quiz-option" onclick="answerQuiz('qe2',0,1)"><span class="opt-letter">A</span> Não aplicar — não está qualificada/o</li><li class="quiz-option" onclick="answerQuiz('qe2',1,1)"><span class="opt-letter">B</span> Aplicar — é candidata/o legítima/o</li><li class="quiz-option" onclick="answerQuiz('qe2',2,1)"><span class="opt-letter">C</span> Esperar ter 100% dos requisitos</li><li class="quiz-option" onclick="answerQuiz('qe2',3,1)"><span class="opt-letter">D</span> Pedir para um conhecido indicar internamente antes</li></ul><div class="quiz-feedback" id="fb_qe2"></div></div>` },
+
+  lesson_ent_3: { title:'Case study ao vivo', module:'Módulo 2 — Na Entrevista', duration:'25 min', type:'Leitura', html:`<div class="content-block"><h3>Como resolver um case study na entrevista</h3><p>Cases são usados para avaliar raciocínio, estruturação de problemas e comunicação. Não existe resposta única — o processo importa mais que a conclusão.</p><h4>Framework para resolver qualquer case</h4><ul><li>1. <strong>Entenda o problema:</strong> faça perguntas clarificadoras antes de responder</li><li>2. <strong>Estruture em voz alta:</strong> mostre como você pensa</li><li>3. <strong>Priorize:</strong> diga o que vai abordar primeiro e por quê</li><li>4. <strong>Use dados (mesmo hipotéticos):</strong> "supondo que temos X usuários..."</li><li>5. <strong>Conclua com recomendação clara</strong></li></ul><div class="example-card"><div class="example-label">Exemplo de case frequente para PO/BA</div><p>"O app de entregas da empresa tem uma taxa de abandono de 40% na tela de pagamento. Como você investigaria e resolveria isso?"</p></div><div class="highlight-box"><p><strong>Resposta estruturada:</strong> Primeiro perguntaria dados (quando começou, qual device, qual método de pagamento). Depois mapearia a jornada e identificaria hipóteses. Proporia experimentos (A/B test) para validar. Priorizaria soluções pelo impacto vs esforço.</p></div><div class="tip-box"><p>💡 Dizer "não sei, mas pensaria da seguinte forma..." vale muito mais do que silêncio ou chute. Recrutadores avaliam o processo de pensamento.</p></div></div>` },
+
+  lesson_ent_4: { title:'50 perguntas e respostas', module:'Módulo 2 — Na Entrevista', duration:'30 min', type:'Slides', html:`<div class="slides-container" id="slides_ent_4"><div class="slide active"><div class="slide-num">Slide 1 de 6</div><div class="slide-big-icon">💬</div><h4>As perguntas mais frequentes</h4><p>Selecionamos as 50 perguntas mais comuns em entrevistas de tech e as agrupamos por categoria. Estude cada uma com o método STAR.</p></div><div class="slide"><div class="slide-num">Slide 2 de 6</div><h4>Sobre você</h4><ul><li>"Me fale sobre você" → Presente, passado, futuro (2 min)</li><li>"Qual seu maior defeito?" → Real + como está trabalhando nele</li><li>"Por que tech?" → História genuína, sem clichê</li><li>"Onde quer estar em 5 anos?" → Ambicioso mas realista</li><li>"Por que essa empresa?" → Pesquisa real sobre a empresa</li></ul></div><div class="slide"><div class="slide-num">Slide 3 de 6</div><h4>Sobre Agilidade</h4><ul><li>"Como você define o Scrum?" → Papéis, cerimônias, artefatos</li><li>"Qual a diferença entre PO e Scrum Master?"</li><li>"Como você prioriza o backlog?"</li><li>"O que é Definition of Done?"</li><li>"Já trabalhou com Kanban? Como foi?"</li></ul></div><div class="slide"><div class="slide-num">Slide 4 de 6</div><h4>Situacionais</h4><ul><li>"Um stakeholder quer uma feature que você acha errada. O que faz?"</li><li>"O sprint vai estourar o prazo. O que faz?"</li><li>"O time não consegue estimar uma story. Como resolve?"</li><li>"Dois stakeholders têm prioridades conflitantes. E aí?"</li></ul></div><div class="slide"><div class="slide-num">Slide 5 de 6</div><h4>Técnicas (para Analista/PO/BA)</h4><ul><li>"Escreva uma User Story para mim agora"</li><li>"Como você levanta requisitos com um cliente difícil?"</li><li>"O que é um requisito não-funcional? Me dê exemplos"</li><li>"Como você valida se um requisito é bom?"</li><li>"Qual a diferença entre caso de uso e user story?"</li></ul></div><div class="slide"><div class="slide-num">Slide 6 de 6</div><h4>Suas perguntas para o entrevistador</h4><ul><li>"Como é o processo de onboarding?"</li><li>"Como o time mede sucesso?"</li><li>"Qual o maior desafio do time agora?"</li><li>"Como é a cultura de feedback?"</li><li>"O que você mais gosta de trabalhar aqui?"</li></ul><p style="margin-top:0.75rem;font-size:0.8rem;color:var(--muted)">Nunca saia sem perguntar nada — demonstra desinteresse.</p></div><div class="slides-nav"><button class="btn-slide" onclick="prevSlide('slides_ent_4')" id="prev_slides_ent_4" disabled>← Anterior</button><span class="slide-counter" id="counter_slides_ent_4">1 / 6</span><button class="btn-slide" onclick="nextSlide('slides_ent_4')" id="next_slides_ent_4">Próximo →</button><div class="slide-dots" id="dots_slides_ent_4"></div></div></div>` },
+
+  lesson_ent_5: { title:'Negociação de salário', module:'Módulo 3 — Fechamento', duration:'20 min', type:'Leitura', html:`<div class="content-block"><h3>Negociação: a habilidade que mais impacta sua carreira</h3><p>Uma negociação bem feita pode significar R$500 a R$2.000 a mais por mês. Em 10 anos, isso é uma diferença enorme. E a maioria das pessoas simplesmente não negocia.</p><h4>Pesquise antes de negociar</h4><ul><li>Glassdoor, LinkedIn Salary, Levels.fyi</li><li>Converse com pessoas da área sobre faixas reais</li><li>Considere: senioridade, empresa, cidade, stack</li><li>Defina sua faixa: piso (mínimo aceitável) e teto (ideal)</li></ul><h4>Quando negociar?</h4><p>Sempre após receber a oferta. Nunca antes. Se perguntarem sua expectativa antes, diga: "Estou aberta/o a ouvir a proposta de vocês primeiro."</p><h4>Scripts que funcionam</h4><div class="example-card"><div class="example-label">Script 1 — Primeira contraproposta</div><p>"Agradeço muito pela oferta. Estou muito animada/o com a oportunidade. Pesquisando o mercado, vi que o range para esse perfil está entre X e Y. Vocês teriam flexibilidade para chegar em [valor 15-20% acima]?"</p></div><div class="example-card"><div class="example-label">Script 2 — Se não puderem mexer no salário</div><p>"Entendo. Além do salário, há flexibilidade em outros benefícios como home office, dias de férias ou auxílio educação?"</p></div><div class="tip-box"><p>💡 Nunca aceite ou recuse na hora. Peça 24-48h para avaliar. Nenhuma empresa séria retira uma oferta porque você pediu tempo para pensar.</p></div></div>` },
+
+  quiz_ent_2: { title:'Quiz Final — Entrevistas Tech', module:'Módulo 3 — Fechamento', duration:'6 min', type:'Quiz', html:`<div class="quiz-block" id="qef1"><h4>1. Quando é o melhor momento para negociar salário?</h4><ul class="quiz-options"><li class="quiz-option" onclick="answerQuiz('qef1',0,2)"><span class="opt-letter">A</span> Na primeira entrevista</li><li class="quiz-option" onclick="answerQuiz('qef1',1,2)"><span class="opt-letter">B</span> Após receber a oferta</li><li class="quiz-option" onclick="answerQuiz('qef1',2,2)"><span class="opt-letter">C</span> Antes do processo seletivo</li><li class="quiz-option" onclick="answerQuiz('qef1',3,2)"><span class="opt-letter">D</span> Na entrevista com RH</li></ul><div class="quiz-feedback" id="fb_qef1"></div></div><div class="quiz-block" id="qef2"><h4>2. No método STAR, qual elemento é mais negligenciado pelos candidatos?</h4><ul class="quiz-options"><li class="quiz-option" onclick="answerQuiz('qef2',0,3)"><span class="opt-letter">A</span> Situation</li><li class="quiz-option" onclick="answerQuiz('qef2',1,3)"><span class="opt-letter">B</span> Task</li><li class="quiz-option" onclick="answerQuiz('qef2',2,3)"><span class="opt-letter">C</span> Action</li><li class="quiz-option" onclick="answerQuiz('qef2',3,3)"><span class="opt-letter">D</span> Result (resultado mensurável)</li></ul><div class="quiz-feedback" id="fb_qef2"></div></div>` },
+};
+
+// Respostas corretas dos quizzes
+const CORRECT = {
+  q1:1, q2:1,
+  qr1:1, qr2:2,
+  qs1:2, qs2:1,
+  qsc1:0, qsc2:1,
+  qa1:1, qa2:1,
+  qag1:1, qag2:1,
+  qpo1:1, qpo2:2,
+  qpf1:1, qpf2:0,
+  qli1:1, qli2:1,
+  qe1:3, qe2:1,
+  qef1:1, qef2:3,
+};
+
+// ════════════════════════════════════════
+// ESTADO DA APLICAÇÃO
+// ════════════════════════════════════════
+let state = {
+  user: null,
+  currentCourse: null,
+  currentLessonIndex: 0,
+  done: {},
+};
+
+// Restore from sessionStorage
+try {
+  const saved = sessionStorage.getItem('pd_state');
+  if (saved) { const s = JSON.parse(saved); state.user = s.user; state.done = s.done || {}; }
+} catch(e){}
+
+function saveState() {
+  try { sessionStorage.setItem('pd_state', JSON.stringify({user: state.user, done: state.done})); } catch(e){}
+}
+
+// ════════════════════════════════════════
+// NAVEGAÇÃO
+// ════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function goHome() { showScreen('screenCatalog'); }
+
+function updateUserBadge() {
+  if (state.user) {
+    const b = document.getElementById('userBadge');
+    document.getElementById('userName').textContent = state.user.name.split(' ')[0];
+    b.classList.add('visible');
+  }
+}
+
+// ════════════════════════════════════════
+// CATÁLOGO
+// ════════════════════════════════════════
+function renderCatalog() {
+  const grid = document.getElementById('coursesGrid');
+  grid.innerHTML = COURSES.map(c => {
+    const totalLessons = c.modules.reduce((a,m) => a + m.lessons.length, 0);
+    const doneLessons = (state.done[c.id] || []).length;
+    const pct = totalLessons ? Math.round((doneLessons/totalLessons)*100) : 0;
+    const started = doneLessons > 0;
+    return `
+    <div class="course-card" onclick="startCourse('${c.id}')">
+      <div class="course-thumb ${c.thumb}"></div>
+      <div class="modules-count">${totalLessons} aulas</div>
+      <div class="course-body">
+        <div class="course-meta">
+          <span class="level-badge ${c.levelClass}">${c.level}</span>
+          <span class="duration">⏱ ${c.duration}</span>
+        </div>
+        <h3>${c.title}</h3>
+        <p>${c.desc}</p>
+        <div class="course-tags">${c.tags.map(t=>`<span class="ctag">${t}</span>`).join('')}</div>
+        ${started ? `<div style="margin-bottom:1rem"><div style="display:flex;justify-content:space-between;font-size:0.7rem;color:var(--muted);margin-bottom:0.35rem"><span>Progresso</span><span>${pct}%</span></div><div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div></div>` : ''}
+        <button class="btn-access btn-free">${started ? (pct===100 ? '✅ Concluído' : '▶ Continuar') : '🚀 Começar Agora'}</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════
+// CADASTRO → ACESSO
+// ════════════════════════════════════════
+let pendingCourseId = null;
+
+function startCourse(id) {
+  if (state.user) {
+    openPlayer(id);
+  } else {
+    pendingCourseId = id;
+    const course = COURSES.find(c => c.id === id);
+    document.getElementById('regCourseName').textContent = '📚 ' + course.title;
+    showScreen('screenRegister');
+  }
+}
+
+function fmtPhone(input) {
+  let v = input.value.replace(/\D/g,'').substring(0,11);
+  if (v.length >= 7) v = '(' + v.substring(0,2) + ') ' + v.substring(2,7) + '-' + v.substring(7);
+  else if (v.length >= 3) v = '(' + v.substring(0,2) + ') ' + v.substring(2);
+  input.value = v;
+}
+
+function doRegister() {
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const phone = document.getElementById('regPhone').value.trim();
+  if (!name || name.length < 2) { alert('Por favor, informe seu nome completo.'); return; }
+  if (!email || !email.includes('@')) { alert('Por favor, informe um e-mail válido.'); return; }
+  if (!phone || phone.replace(/\D/g,'').length < 10) { alert('Por favor, informe seu WhatsApp com DDD.'); return; }
+
+  state.user = { name, email, phone };
+  saveState();
+  updateUserBadge();
+
+  // Notificar via WhatsApp (abre em background silenciosamente)
+  const msg = encodeURIComponent(`🎓 Novo cadastro Planeta Digital!\n\nNome: ${name}\nEmail: ${email}\nWhatsApp: ${phone}\nCurso: ${COURSES.find(c=>c.id===pendingCourseId)?.title}`);
+  // Link para notificar você (abre numa janela nova discreta)
+  const notifyLink = `https://wa.me/553128880350?text=${msg}`;
+  const notifyWin = window.open(notifyLink, '_blank', 'width=1,height=1,left=-100');
+  setTimeout(() => { try { notifyWin && notifyWin.close(); } catch(e){} }, 3000);
+
+  openPlayer(pendingCourseId);
+}
+
+// ════════════════════════════════════════
+// PLAYER
+// ════════════════════════════════════════
+function openPlayer(courseId) {
+  state.currentCourse = courseId;
+  // Vai para a última aula feita ou a primeira
+  const done = state.done[courseId] || [];
+  const course = COURSES.find(c => c.id === courseId);
+  const allLessons = course.modules.flatMap(m => m.lessons);
+  let idx = done.length > 0 && done.length < allLessons.length ? done.length : 0;
+  state.currentLessonIndex = idx;
+  showScreen('screenPlayer');
+  renderPlayer();
+}
+
+function renderPlayer() {
+  const course = COURSES.find(c => c.id === state.currentCourse);
+  const done = state.done[state.currentCourse] || [];
+  const allLessons = course.modules.flatMap(m => m.lessons);
+  const totalLessons = allLessons.length;
+  const pct = Math.round((done.length / totalLessons) * 100);
+
+  // Sidebar
+  let sidebarHTML = `
+    <div class="sidebar-course-title">
+      <div class="s-label">// Treinamento</div>
+      <h4>${course.title}</h4>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="p-label"><span>Progresso</span><span>${pct}%</span></div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    </div>`;
+
+  let lessonGlobalIdx = 0;
+  course.modules.forEach(mod => {
+    sidebarHTML += `<div class="module-group"><div class="module-group-title">${mod.title}</div>`;
+    mod.lessons.forEach(lesson => {
+      const idx = lessonGlobalIdx;
+      const isDone = done.includes(idx);
+      const isActive = idx === state.currentLessonIndex;
+      sidebarHTML += `
+        <div class="lesson-item ${isDone?'done':''} ${isActive?'active':''}" onclick="goToLesson(${idx})">
+          <div class="lesson-dot">${isDone?'✓':''}</div>
+          <span>${lesson.title}</span>
+          <span class="lesson-type-icon">${lesson.type}</span>
+        </div>`;
+      lessonGlobalIdx++;
+    });
+    sidebarHTML += `</div>`;
+  });
+
+  document.getElementById('sidebar').innerHTML = sidebarHTML;
+  renderLesson();
+}
+
+function goToLesson(idx) {
+  state.currentLessonIndex = idx;
+  renderPlayer();
+  document.getElementById('playerMain').scrollTo(0,0);
+  window.scrollTo(0,0);
+}
+
+function renderLesson() {
+  const course = COURSES.find(c => c.id === state.currentCourse);
+  const allLessons = course.modules.flatMap(m => m.lessons);
+  const totalLessons = allLessons.length;
+  const idx = state.currentLessonIndex;
+
+  // Check if all done
+  const done = state.done[state.currentCourse] || [];
+  if (done.length >= totalLessons) {
+    renderCongrats();
+    return;
+  }
+
+  const lesson = allLessons[idx];
+  const lessonData = LESSONS[lesson.content];
+  if (!lessonData) { document.getElementById('playerMain').innerHTML = '<div style="padding:2rem;color:var(--muted)">Conteúdo em breve...</div>'; return; }
+
+  const isDone = done.includes(idx);
+  const isLast = idx === totalLessons - 1;
+
+  let html = `
+    <div class="lesson-header">
+      <div class="lesson-breadcrumb">${course.title} → ${lessonData.module}</div>
+      <h2>${lessonData.title}</h2>
+      <div class="lesson-meta-row">
+        <span class="lm-item">⏱ ${lessonData.duration}</span>
+        <span class="lm-item">📌 ${lessonData.type}</span>
+        ${isDone ? '<span class="lm-item" style="color:var(--accent3)">✅ Concluída</span>' : ''}
+      </div>
+    </div>
+    ${lessonData.html}
+    <div class="lesson-nav">
+      <button class="btn-lesson-nav" onclick="goToLesson(${idx-1})" ${idx===0?'disabled':''}>← Anterior</button>
+      <div style="display:flex;gap:0.75rem;align-items:center">
+        ${!isDone ? `<button class="complete-btn" onclick="markDone(${idx})">✅ Marcar como concluída</button>` : ''}
+        ${idx < totalLessons-1 ? `<button class="btn-lesson-nav primary" onclick="goToLesson(${idx+1})">Próxima →</button>` : ''}
+        ${isLast && isDone ? `<button class="btn-lesson-nav primary" onclick="renderCongrats()">🎉 Concluir Treinamento</button>` : ''}
+      </div>
+    </div>`;
+
+  document.getElementById('playerMain').innerHTML = html;
+
+  // Init slides
+  setTimeout(() => {
+    document.querySelectorAll('.slides-container').forEach(sc => initSlides(sc.id));
+  }, 50);
+}
+
+function markDone(idx) {
+  const courseId = state.currentCourse;
+  if (!state.done[courseId]) state.done[courseId] = [];
+  if (!state.done[courseId].includes(idx)) state.done[courseId].push(idx);
+  saveState();
+  renderPlayer();
+}
+
+// ════════════════════════════════════════
+// SLIDES ENGINE
+// ════════════════════════════════════════
+function initSlides(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const slides = container.querySelectorAll('.slide');
+  const dotsEl = container.querySelector('.slide-dots');
+  if (!dotsEl) return;
+  dotsEl.innerHTML = '';
+  slides.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'slide-dot' + (i===0?' active':'');
+    dot.onclick = () => goToSlide(containerId, i);
+    dotsEl.appendChild(dot);
+  });
+}
+
+function goToSlide(containerId, target) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const slides = container.querySelectorAll('.slide');
+  const total = slides.length;
+  slides.forEach((s,i) => s.classList.toggle('active', i===target));
+  const counter = container.querySelector('.slide-counter');
+  if (counter) counter.textContent = `${target+1} / ${total}`;
+  const prevBtn = container.querySelector('[id^="prev_"]');
+  const nextBtn = container.querySelector('[id^="next_"]');
+  if (prevBtn) prevBtn.disabled = target === 0;
+  if (nextBtn) nextBtn.disabled = target === total-1;
+  const dots = container.querySelectorAll('.slide-dot');
+  dots.forEach((d,i) => d.classList.toggle('active', i===target));
+}
+
+function currentSlideIndex(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return 0;
+  const slides = container.querySelectorAll('.slide');
+  for (let i=0;i<slides.length;i++) if (slides[i].classList.contains('active')) return i;
+  return 0;
+}
+
+function nextSlide(containerId) {
+  const idx = currentSlideIndex(containerId);
+  const container = document.getElementById(containerId);
+  const total = container ? container.querySelectorAll('.slide').length : 0;
+  if (idx < total-1) goToSlide(containerId, idx+1);
+}
+
+function prevSlide(containerId) {
+  const idx = currentSlideIndex(containerId);
+  if (idx > 0) goToSlide(containerId, idx-1);
+}
+
+// ════════════════════════════════════════
+// QUIZ ENGINE
+// ════════════════════════════════════════
+function answerQuiz(questionId, selectedIdx, correctIdx) {
+  const questionEl = document.getElementById(questionId);
+  if (!questionEl) return;
+  const options = questionEl.querySelectorAll('.quiz-option');
+  const feedback = document.getElementById('fb_' + questionId);
+  if (options[0].classList.contains('disabled')) return;
+
+  options.forEach(o => o.classList.add('disabled'));
+  const isCorrect = selectedIdx === correctIdx;
+  options[selectedIdx].classList.add(isCorrect ? 'correct' : 'wrong');
+  if (!isCorrect) options[correctIdx].classList.add('correct');
+
+  feedback.classList.add('show', isCorrect ? 'ok' : 'nok');
+  feedback.innerHTML = isCorrect
+    ? '✅ Correto! Muito bem!'
+    : `❌ Incorreto. A resposta certa é a opção ${String.fromCharCode(65+correctIdx)}.`;
+}
+
+// ════════════════════════════════════════
+// TELA DE PARABÉNS
+// ════════════════════════════════════════
+function renderCongrats() {
+  const course = COURSES.find(c => c.id === state.currentCourse);
+  const today = new Date().toLocaleDateString('pt-BR', {day:'2-digit',month:'long',year:'numeric'});
+  document.getElementById('playerMain').innerHTML = `
+    <div class="congrats-wrap">
+      <div class="big-icon">🏆</div>
+      <h2>Parabéns, ${state.user ? state.user.name.split(' ')[0] : 'aluno'}!</h2>
+      <p>Você completou o treinamento <strong>${course.title}</strong> com sucesso. Continue aprendendo e aplique o conhecimento no mercado!</p>
+      <div class="cert-card">
+        <div class="cert-badge">🎓</div>
+        <div class="cert-title">// CERTIFICADO DE CONCLUSÃO</div>
+        <div class="cert-name">${state.user ? state.user.name : 'Aluno'}</div>
+        <div class="cert-course">Concluiu: ${course.title}</div>
+        <div class="cert-date">Planeta Digital · ${today}</div>
+      </div>
+      <button class="btn-lesson-nav primary" onclick="goHome()" style="margin:0 auto">← Ver outros treinamentos</button>
+    </div>`;
+  renderCatalog();
+}
+
+// ════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════
+updateUserBadge();
+renderCatalog();
+</script>
+</body>
+</html>
