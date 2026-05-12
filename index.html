@@ -556,9 +556,12 @@
     <!-- PASSO 3: SUCESSO -->
     <div id="pix-step3" style="display:none;text-align:center;padding:1rem 0">
       <div style="font-size:3rem;margin-bottom:1rem">🎉</div>
-      <h3 style="font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:.5rem">Tudo certo!</h3>
-      <p style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem;line-height:1.6">Seus dados foram registrados. Você receberá o link do ebook no WhatsApp em instantes. Caso prefira, acesse diretamente:</p>
-      <a href="https://drive.google.com/file/d/1Y4tjkw6y_dFynNXepFhK6PI9c0nJ6HKR/view?usp=drive_link" target="_blank" style="display:inline-flex;align-items:center;justify-content:center;gap:.5rem;background:var(--accent3);color:#000;font-family:'Syne',sans-serif;font-weight:800;padding:.9rem 2rem;border-radius:8px;text-decoration:none;font-size:.95rem">📖 Acessar Ebook Agora</a>
+      <h3 style="font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:.5rem">Pedido recebido!</h3>
+      <p style="color:var(--muted);font-size:.88rem;margin-bottom:1rem;line-height:1.7">Seus dados foram registrados com sucesso! Assim que o pagamento for confirmado, você receberá o link do ebook no seu <strong style="color:var(--text)">WhatsApp em até 24 horas</strong>.</p>
+      <div style="background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.2);border-radius:10px;padding:1rem 1.25rem;font-size:.82rem;color:var(--muted);line-height:1.6">
+        📲 Fique atento ao WhatsApp informado.<br>
+        ❓ Dúvidas? Fale com a gente: <strong style="color:var(--accent3)">(31) 2888-0350</strong>
+      </div>
     </div>
   </div>
 </div>
@@ -605,18 +608,25 @@
     const nome = document.getElementById('buyerName').value.trim();
     const whatsapp = document.getElementById('buyerPhone').value.trim();
     if (!nome || nome.length < 2) { alert('Por favor, informe seu nome.'); return; }
-    if (!whatsapp || whatsapp.replace(/\D/g,'').length < 10) { alert('Por favor, informe seu WhatsApp com DDD.'); return; }
+    if (whatsapp.replace(/[^0-9]/g,'').length < 10) { alert('Por favor, informe seu WhatsApp com DDD.'); return; }
 
-    // Salva na planilha com Pago = Sim
+    // Mostra feedback imediato
+    document.getElementById('pix-step2').style.display = 'none';
+    document.getElementById('pix-step3').style.display = 'block';
+
+    // Salva na planilha via form-encoded (mais compatível com no-cors)
+    const formData = new FormData();
+    formData.append('nome', nome);
+    formData.append('email', '');
+    formData.append('whatsapp', whatsapp);
+    formData.append('curso', 'Ebook — R$19,90');
+    formData.append('pago', 'Sim');
+
     fetch(SHEETS_URL_EBOOK, {
       method: 'POST',
       mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nome, email: '', whatsapp, curso: 'Ebook — R$19,90', pago: 'Sim' })
+      body: formData
     }).catch(() => {});
-
-    document.getElementById('pix-step2').style.display = 'none';
-    document.getElementById('pix-step3').style.display = 'block';
   }
 
   document.getElementById('pixModal').addEventListener('click', function(e) { if(e.target===this) this.classList.remove('active'); });
