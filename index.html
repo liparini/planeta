@@ -574,7 +574,7 @@
     window.open('https://wa.me/553128880350?text=' + msg, '_blank');
   }
 
-  const SHEETS_URL_EBOOK = 'https://script.google.com/macros/s/AKfycbwT2hbZk5wB7FDezhMfEiY4XmgOhQPnnYCMX4xdbfl9Qb07tE1R_KmGsiRIknht3-q/exec';
+  const SHEETS_URL_EBOOK = 'https://script.google.com/macros/s/AKfycbwaBr6TNoarwBzE0-duKrMLHj2q96PzkSis6qN0XMTp8CqNJdr7CDrGqRXvfTCPjRVw/exec';
 
   function openPixModal() {
     document.getElementById('pixModal').classList.add('active');
@@ -585,11 +585,32 @@
 
   function copyPixCode() {
     const code = '00020101021226620014BR.GOV.BCB.PIX0114+55319947180000222Pagamento loja-so-pra-520400005303986540519.905802BR592461934682 CAROLINE INACIA6010NOVA UNIAO62290525QRCCBdUWsFLHfKcIqvx4NAjqZ630413B5';
-    navigator.clipboard.writeText(code).then(() => {
-      const btn = document.getElementById('copyPixBtn');
-      btn.textContent = '✅ Código copiado!';
-      setTimeout(() => { btn.textContent = '📋 Copiar Código Pix'; }, 3000);
-    }).catch(() => { prompt('Copie o código abaixo:', code); });
+    const btn = document.getElementById('copyPixBtn');
+    // Tenta clipboard moderno
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(code).then(() => {
+        btn.textContent = '✅ Código copiado!';
+        setTimeout(() => { btn.textContent = '📋 Copiar Código Pix'; }, 3000);
+      }).catch(() => fallbackCopy(code, btn));
+    } else {
+      fallbackCopy(code, btn);
+    }
+  }
+
+  function fallbackCopy(text, btn) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try {
+      document.execCommand('copy');
+      if (btn) { btn.textContent = '✅ Código copiado!'; setTimeout(() => { btn.textContent = '📋 Copiar Código Pix'; }, 3000); }
+    } catch(e) {
+      prompt('Copie o código manualmente:', text);
+    }
+    document.body.removeChild(ta);
   }
 
   function goToStep2() {
@@ -610,23 +631,20 @@
     if (!nome || nome.length < 2) { alert('Por favor, informe seu nome.'); return; }
     if (whatsapp.replace(/[^0-9]/g,'').length < 10) { alert('Por favor, informe seu WhatsApp com DDD.'); return; }
 
-    // Mostra feedback imediato
+    // Mostra tela de sucesso imediatamente
     document.getElementById('pix-step2').style.display = 'none';
     document.getElementById('pix-step3').style.display = 'block';
 
-    // Salva na planilha via form-encoded (mais compatível com no-cors)
-    const formData = new FormData();
-    formData.append('nome', nome);
-    formData.append('email', '');
-    formData.append('whatsapp', whatsapp);
-    formData.append('curso', 'Ebook — R$19,90');
-    formData.append('pago', 'Sim');
-
-    fetch(SHEETS_URL_EBOOK, {
-      method: 'POST',
-      mode: 'no-cors',
-      body: formData
-    }).catch(() => {});
+    // Envia via XMLHttpRequest (mais confiável com no-cors no GitHub Pages)
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', SHEETS_URL_EBOOK, true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    const params = 'nome=' + encodeURIComponent(nome)
+      + '&email=' + encodeURIComponent('')
+      + '&whatsapp=' + encodeURIComponent(whatsapp)
+      + '&curso=' + encodeURIComponent('Ebook — R$19,90')
+      + '&pago=' + encodeURIComponent('Sim');
+    xhr.send(params);
   }
 
   document.getElementById('pixModal').addEventListener('click', function(e) { if(e.target===this) this.classList.remove('active'); });
