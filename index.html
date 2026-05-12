@@ -498,10 +498,9 @@
         <span class="price-main">R$19,90</span>
       </div>
       <div class="pay-btns">
-        <a href="https://link.infinitepay.io/loja-so-pra-baixinhos/VC1DLTMtSQ-PN5hMT2NHn-19,90" target="_blank" class="btn-pix" style="text-decoration:none">🟩 Pagar com Pix</a>
-        <a href="https://link.infinitepay.io/loja-so-pra-baixinhos/VC1DLTMtSQ-PN5hMT2NHn-19,90" target="_blank" class="btn-card" style="text-decoration:none">💳 Até 3x no Cartão</a>
+        <button class="btn-pix" onclick="openPixModal()" style="width:100%">🟩 Pagar com Pix — R$19,90</button>
       </div>
-      <p style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted)">🔒 Pagamento seguro via InfinitePay · Pix à vista ou até 3x no cartão</p>
+      <p style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted)">🔒 Pagamento 100% seguro via Pix · Acesso imediato após confirmação</p>
     </div>
   </div>
 </div>
@@ -513,15 +512,54 @@
   <p style="margin-top:0.5rem;font-size:0.75rem">Pagamentos processados com segurança · Entrega digital imediata após confirmação</p>
 </footer>
 
-<!-- MODAL APÓS PAGAMENTO: orientação de acesso ao ebook -->
-<div class="modal-overlay" id="ebookModal">
-  <div class="modal" style="text-align:center">
-    <button class="modal-close" onclick="document.getElementById('ebookModal').classList.remove('active')">✕</button>
-    <div style="font-size:2.5rem;margin-bottom:1rem">📥</div>
-    <h3 style="font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:0.5rem">Acesse seu Ebook</h3>
-    <p style="color:var(--muted);font-size:0.88rem;margin-bottom:1.5rem;line-height:1.6">Após confirmar o pagamento na InfinitePay, clique no botão abaixo para acessar seu ebook imediatamente.</p>
-    <a href="https://drive.google.com/file/d/1Y4tjkw6y_dFynNXepFhK6PI9c0nJ6HKR/view?usp=drive_link" target="_blank" class="download-link" style="display:inline-flex;align-items:center;gap:0.5rem">📖 Acessar Ebook Agora</a>
-    <p style="margin-top:1rem;font-size:0.73rem;color:var(--muted)">Dúvidas? Entre em contato com o suporte do Planeta Digital.</p>
+<!-- MODAL PIX -->
+<div class="modal-overlay" id="pixModal">
+  <div class="modal" style="max-width:480px">
+    <button class="modal-close" onclick="document.getElementById('pixModal').classList.remove('active')">✕</button>
+
+    <!-- PASSO 1: CÓDIGO PIX -->
+    <div id="pix-step1">
+      <h3 style="font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;margin-bottom:.3rem">Pagar com Pix</h3>
+      <p style="color:var(--muted);font-size:.83rem;margin-bottom:1.2rem">Copie o código abaixo e cole no app do seu banco em <strong>Pix Copia e Cola</strong>.</p>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:1.25rem;margin-bottom:1rem;text-align:center">
+        <div style="font-size:2rem;margin-bottom:.5rem">📱</div>
+        <div style="font-family:'Space Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--accent3);margin-bottom:.25rem">R$ 19,90</div>
+        <div style="font-size:.78rem;color:var(--muted)">CAROLINE INACIA · NOVA UNIÃO · MG</div>
+      </div>
+      <div style="background:rgba(0,229,255,.04);border:1px solid rgba(0,229,255,.12);border-radius:8px;padding:.85rem;font-family:'Space Mono',monospace;font-size:.62rem;color:var(--muted);word-break:break-all;line-height:1.6;margin-bottom:.75rem">00020101021226620014BR.GOV.BCB.PIX0114+55319947180000222Pagamento loja-so-pra-520400005303986540519.905802BR592461934682 CAROLINE INACIA6010NOVA UNIAO62290525QRCCBdUWsFLHfKcIqvx4NAjqZ630413B5</div>
+      <button onclick="copyPixCode()" id="copyPixBtn" style="width:100%;background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.2);color:var(--accent);font-family:'Syne',sans-serif;font-weight:700;padding:.75rem;border-radius:8px;cursor:pointer;font-size:.88rem;margin-bottom:.75rem;transition:all .2s">📋 Copiar Código Pix</button>
+      <div style="background:rgba(16,185,129,.05);border:1px solid rgba(16,185,129,.15);border-radius:8px;padding:.85rem;font-size:.78rem;color:var(--muted);line-height:1.6;margin-bottom:1rem">
+        ✅ Após realizar o pagamento, clique em <strong style="color:var(--accent3)">"Já paguei"</strong> e informe seus dados para receber o ebook.
+      </div>
+      <button onclick="goToStep2()" style="width:100%;background:linear-gradient(135deg,var(--accent3),#059669);color:#000;font-family:'Syne',sans-serif;font-weight:800;padding:.85rem;border-radius:8px;border:none;cursor:pointer;font-size:.92rem">✅ Já paguei — quero meu ebook</button>
+    </div>
+
+    <!-- PASSO 2: DADOS PARA ENTREGA -->
+    <div id="pix-step2" style="display:none">
+      <div style="text-align:center;margin-bottom:1.5rem">
+        <div style="font-size:2.2rem;margin-bottom:.5rem">📬</div>
+        <h3 style="font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;margin-bottom:.3rem">Quase lá!</h3>
+        <p style="color:var(--muted);font-size:.83rem;line-height:1.6">Informe seus dados para enviarmos o link do ebook via WhatsApp.</p>
+      </div>
+      <div class="form-group">
+        <label style="display:block;font-size:.72rem;color:var(--muted);margin-bottom:.35rem;font-family:'Space Mono',monospace;text-transform:uppercase;letter-spacing:.5px">Seu nome</label>
+        <input type="text" id="buyerName" placeholder="Ex: Maria Silva" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.75rem 1rem;color:var(--text);font-family:'Inter',sans-serif;font-size:.9rem">
+      </div>
+      <div class="form-group" style="margin-top:.85rem">
+        <label style="display:block;font-size:.72rem;color:var(--muted);margin-bottom:.35rem;font-family:'Space Mono',monospace;text-transform:uppercase;letter-spacing:.5px">Seu WhatsApp (com DDD)</label>
+        <input type="tel" id="buyerPhone" placeholder="(31) 99999-0000" oninput="fmtBuyerPhone(this)" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.75rem 1rem;color:var(--text);font-family:'Inter',sans-serif;font-size:.9rem">
+      </div>
+      <button onclick="submitBuyer()" style="width:100%;background:linear-gradient(135deg,var(--accent3),#059669);color:#000;font-family:'Syne',sans-serif;font-weight:800;padding:.85rem;border-radius:8px;border:none;cursor:pointer;font-size:.92rem;margin-top:1.25rem">📖 Receber meu Ebook</button>
+      <button onclick="document.getElementById('pix-step2').style.display='none';document.getElementById('pix-step1').style.display='block'" style="width:100%;background:none;border:none;color:var(--muted);font-size:.8rem;margin-top:.75rem;cursor:pointer;font-family:'Inter',sans-serif">← Voltar</button>
+    </div>
+
+    <!-- PASSO 3: SUCESSO -->
+    <div id="pix-step3" style="display:none;text-align:center;padding:1rem 0">
+      <div style="font-size:3rem;margin-bottom:1rem">🎉</div>
+      <h3 style="font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:.5rem">Tudo certo!</h3>
+      <p style="color:var(--muted);font-size:.88rem;margin-bottom:1.5rem;line-height:1.6">Seus dados foram registrados. Você receberá o link do ebook no WhatsApp em instantes. Caso prefira, acesse diretamente:</p>
+      <a href="https://drive.google.com/file/d/1Y4tjkw6y_dFynNXepFhK6PI9c0nJ6HKR/view?usp=drive_link" target="_blank" style="display:inline-flex;align-items:center;justify-content:center;gap:.5rem;background:var(--accent3);color:#000;font-family:'Syne',sans-serif;font-weight:800;padding:.9rem 2rem;border-radius:8px;text-decoration:none;font-size:.95rem">📖 Acessar Ebook Agora</a>
+    </div>
   </div>
 </div>
 
@@ -532,7 +570,56 @@
     const msg = encodeURIComponent('Olá! Vim pelo site Planeta Digital e quero acesso ao treinamento: ' + name);
     window.open('https://wa.me/553128880350?text=' + msg, '_blank');
   }
-  document.getElementById('ebookModal').addEventListener('click',function(e){if(e.target===this)e.target.classList.remove('active');});
+
+  const SHEETS_URL_EBOOK = 'https://script.google.com/macros/s/AKfycbwT2hbZk5wB7FDezhMfEiY4XmgOhQPnnYCMX4xdbfl9Qb07tE1R_KmGsiRIknht3-q/exec';
+
+  function openPixModal() {
+    document.getElementById('pixModal').classList.add('active');
+    document.getElementById('pix-step1').style.display = 'block';
+    document.getElementById('pix-step2').style.display = 'none';
+    document.getElementById('pix-step3').style.display = 'none';
+  }
+
+  function copyPixCode() {
+    const code = '00020101021226620014BR.GOV.BCB.PIX0114+55319947180000222Pagamento loja-so-pra-520400005303986540519.905802BR592461934682 CAROLINE INACIA6010NOVA UNIAO62290525QRCCBdUWsFLHfKcIqvx4NAjqZ630413B5';
+    navigator.clipboard.writeText(code).then(() => {
+      const btn = document.getElementById('copyPixBtn');
+      btn.textContent = '✅ Código copiado!';
+      setTimeout(() => { btn.textContent = '📋 Copiar Código Pix'; }, 3000);
+    }).catch(() => { prompt('Copie o código abaixo:', code); });
+  }
+
+  function goToStep2() {
+    document.getElementById('pix-step1').style.display = 'none';
+    document.getElementById('pix-step2').style.display = 'block';
+  }
+
+  function fmtBuyerPhone(input) {
+    let v = input.value.replace(/\D/g,'').substring(0,11);
+    if (v.length >= 7) v = '(' + v.substring(0,2) + ') ' + v.substring(2,7) + '-' + v.substring(7);
+    else if (v.length >= 3) v = '(' + v.substring(0,2) + ') ' + v.substring(2);
+    input.value = v;
+  }
+
+  function submitBuyer() {
+    const nome = document.getElementById('buyerName').value.trim();
+    const whatsapp = document.getElementById('buyerPhone').value.trim();
+    if (!nome || nome.length < 2) { alert('Por favor, informe seu nome.'); return; }
+    if (!whatsapp || whatsapp.replace(/\D/g,'').length < 10) { alert('Por favor, informe seu WhatsApp com DDD.'); return; }
+
+    // Salva na planilha com Pago = Sim
+    fetch(SHEETS_URL_EBOOK, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nome, email: '', whatsapp, curso: 'Ebook — R$19,90', pago: 'Sim' })
+    }).catch(() => {});
+
+    document.getElementById('pix-step2').style.display = 'none';
+    document.getElementById('pix-step3').style.display = 'block';
+  }
+
+  document.getElementById('pixModal').addEventListener('click', function(e) { if(e.target===this) this.classList.remove('active'); });
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => { if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target);} });
   },{threshold:0.1});
