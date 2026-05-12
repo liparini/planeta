@@ -778,24 +778,30 @@ function fmtPhone(input) {
   input.value = v;
 }
 
+// ── CONFIG ──
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycby0OYCE52Wxg-dEyBEIZ_J4jZg1Cb216xMerPrLZjq_pznsrZjKzMzBqtS0pF0NnWPf/exec';
+
 function doRegister() {
-  const name = document.getElementById('regName').value.trim();
+  const name  = document.getElementById('regName').value.trim();
   const email = document.getElementById('regEmail').value.trim();
   const phone = document.getElementById('regPhone').value.trim();
-  if (!name || name.length < 2) { alert('Por favor, informe seu nome completo.'); return; }
-  if (!email || !email.includes('@')) { alert('Por favor, informe um e-mail válido.'); return; }
+  if (!name || name.length < 2)                      { alert('Por favor, informe seu nome completo.'); return; }
+  if (!email || !email.includes('@'))                 { alert('Por favor, informe um e-mail válido.'); return; }
   if (!phone || phone.replace(/\D/g,'').length < 10) { alert('Por favor, informe seu WhatsApp com DDD.'); return; }
+
+  const curso = COURSES.find(c => c.id === pendingCourseId)?.title || '';
 
   state.user = { name, email, phone };
   saveState();
   updateUserBadge();
 
-  // Notificar via WhatsApp (abre em background silenciosamente)
-  const msg = encodeURIComponent(`🎓 Novo cadastro Planeta Digital!\n\nNome: ${name}\nEmail: ${email}\nWhatsApp: ${phone}\nCurso: ${COURSES.find(c=>c.id===pendingCourseId)?.title}`);
-  // Link para notificar você (abre numa janela nova discreta)
-  const notifyLink = `https://wa.me/553128880350?text=${msg}`;
-  const notifyWin = window.open(notifyLink, '_blank', 'width=1,height=1,left=-100');
-  setTimeout(() => { try { notifyWin && notifyWin.close(); } catch(e){} }, 3000);
+  // 1️⃣ Salva no Google Sheets
+  fetch(SHEETS_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ nome: name, email, whatsapp: phone, curso })
+  }).catch(() => {});
 
   openPlayer(pendingCourseId);
 }
