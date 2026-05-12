@@ -219,7 +219,9 @@ nav { position:fixed; top:0; left:0; right:0; z-index:200; background:rgba(6,9,1
 <nav>
   <div class="logo" onclick="goHome()">Planeta<span>Digital</span></div>
   <div class="nav-right">
-    <div class="user-badge" id="userBadge">👤 <span id="userName">--</span></div>
+    <button id="btnCerts" onclick="showCertificados()" style="display:none;background:rgba(0,229,255,0.08);border:1px solid rgba(0,229,255,0.2);color:var(--accent);font-family:'Syne',sans-serif;font-weight:700;font-size:0.8rem;padding:0.35rem 0.9rem;border-radius:6px;cursor:pointer">🏆 Certificados</button>
+    <div class="user-badge" id="userBadge" style="cursor:pointer" onclick="showLogin()">👤 <span id="userName">Entrar</span></div>
+    <button id="btnLogout" onclick="doLogout()" style="display:none;background:none;border:1px solid rgba(255,255,255,0.1);color:var(--muted);font-family:'Inter',sans-serif;font-size:0.75rem;padding:0.3rem 0.7rem;border-radius:6px;cursor:pointer">Sair</button>
   </div>
 </nav>
 
@@ -235,38 +237,53 @@ nav { position:fixed; top:0; left:0; right:0; z-index:200; background:rgba(6,9,1
   </div>
 </div>
 
-<!-- ══════════════ TELA 2: CADASTRO ══════════════ -->
-<div class="screen" id="screenRegister">
-  <div class="register-wrap">
-    <div class="register-box">
-      <div class="reg-icon">🎓</div>
-      <h2>Acesso Gratuito</h2>
-      <div class="reg-course-name" id="regCourseName"></div>
-      <p class="sub">Preencha seus dados para liberar o treinamento agora. Você terá acesso completo imediatamente.</p>
-      <div class="form-group">
-        <label>Seu nome completo</label>
-        <input type="text" id="regName" placeholder="Ex: Maria Silva">
-      </div>
-      <div class="form-group">
-        <label>Seu melhor e-mail</label>
-        <input type="email" id="regEmail" placeholder="seu@email.com">
-      </div>
-      <div class="form-group">
-        <label>WhatsApp (com DDD)</label>
-        <input type="tel" id="regPhone" placeholder="(31) 99999-0000" oninput="fmtPhone(this)">
-      </div>
-      <button class="btn-register" onclick="doRegister()">🚀 Liberar Acesso Agora</button>
-      <div class="privacy-note">🔒 Seus dados são protegidos. Sem spam, prometemos.</div>
-      <button class="back-link" onclick="showScreen('screenCatalog')">← Voltar ao catálogo</button>
-    </div>
-  </div>
-</div>
+<!-- Tela de cadastro substituída pela tela de login -->
 
 <!-- ══════════════ TELA 3: PLAYER ══════════════ -->
 <div class="screen" id="screenPlayer">
   <div class="player-layout">
     <div class="sidebar" id="sidebar"></div>
     <div class="player-main" id="playerMain"></div>
+  </div>
+</div>
+
+<!-- ══════════════ TELA LOGIN ══════════════ -->
+<div class="screen" id="screenLogin">
+  <div class="register-wrap">
+    <div class="register-box">
+      <div class="reg-icon">🔐</div>
+      <h2 id="loginTitle">Entrar na plataforma</h2>
+      <p class="sub" id="loginSub">Acesse sua conta para ver seu progresso e certificados em qualquer dispositivo.</p>
+      <div class="form-group">
+        <label>Seu e-mail</label>
+        <input type="email" id="loginEmail" placeholder="seu@email.com">
+      </div>
+      <div class="form-group" id="loginNameGroup" style="display:none">
+        <label>Seu nome completo</label>
+        <input type="text" id="loginName" placeholder="Ex: Maria Silva">
+      </div>
+      <div class="form-group" id="loginPhoneGroup" style="display:none">
+        <label>WhatsApp (com DDD)</label>
+        <input type="tel" id="loginPhone" placeholder="(31) 99999-0000" oninput="fmtPhone(this)">
+      </div>
+      <button class="btn-register" id="loginBtn" onclick="doLogin()">🚀 Continuar</button>
+      <button class="back-link" onclick="showScreen('screenCatalog')">← Voltar ao catálogo</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ TELA CERTIFICADOS ══════════════ -->
+<div class="screen" id="screenCertificados">
+  <div class="catalog" style="max-width:800px">
+    <div class="catalog-header" style="text-align:left;margin-bottom:2rem">
+      <div class="badge-tag">// MEUS CERTIFICADOS</div>
+      <h1 style="font-size:clamp(1.8rem,4vw,2.8rem)">Seus <span>certificados</span></h1>
+      <p style="margin:0">Treinamentos concluídos na Planeta Digital. Clique para baixar o certificado em PDF.</p>
+    </div>
+    <div id="certsGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.25rem"></div>
+    <div style="margin-top:2rem">
+      <button class="back-link" onclick="goHome()">← Voltar ao catálogo</button>
+    </div>
   </div>
 </div>
 
@@ -697,15 +714,33 @@ let state = {
   done: {},
 };
 
-// Restore from sessionStorage
-try {
-  const saved = sessionStorage.getItem('pd_state');
-  if (saved) { const s = JSON.parse(saved); state.user = s.user; state.done = s.done || {}; }
-} catch(e){}
+// ── Persistência por e-mail no localStorage ──
+function storageKey(email) { return 'pd_' + (email || 'guest'); }
+
+function loadState(email) {
+  try {
+    const raw = localStorage.getItem(storageKey(email));
+    if (raw) { const s = JSON.parse(raw); state.done = s.done || {}; state.certs = s.certs || {}; }
+    else { state.done = {}; state.certs = {}; }
+  } catch(e) { state.done = {}; state.certs = {}; }
+}
 
 function saveState() {
-  try { sessionStorage.setItem('pd_state', JSON.stringify({user: state.user, done: state.done})); } catch(e){}
+  if (!state.user) return;
+  try {
+    localStorage.setItem(storageKey(state.user.email), JSON.stringify({ done: state.done, certs: state.certs }));
+  } catch(e) {}
 }
+
+// Restaura sessão ativa (último login)
+try {
+  const lastEmail = localStorage.getItem('pd_last_email');
+  const lastUser  = localStorage.getItem('pd_last_user');
+  if (lastEmail && lastUser) {
+    state.user = JSON.parse(lastUser);
+    loadState(lastEmail);
+  }
+} catch(e){}
 
 // ════════════════════════════════════════
 // NAVEGAÇÃO
@@ -719,11 +754,93 @@ function showScreen(id) {
 function goHome() { showScreen('screenCatalog'); }
 
 function updateUserBadge() {
+  const b = document.getElementById('userBadge');
+  const logoutBtn = document.getElementById('btnLogout');
+  const certsBtn  = document.getElementById('btnCerts');
   if (state.user) {
-    const b = document.getElementById('userBadge');
     document.getElementById('userName').textContent = state.user.name.split(' ')[0];
     b.classList.add('visible');
+    if (logoutBtn) logoutBtn.style.display = 'block';
+    if (certsBtn)  certsBtn.style.display  = 'block';
+  } else {
+    document.getElementById('userName').textContent = 'Entrar';
+    b.classList.add('visible');
+    if (logoutBtn) logoutBtn.style.display = 'none';
+    if (certsBtn)  certsBtn.style.display  = 'none';
   }
+}
+
+function showLogin(pendingId) {
+  window._loginPending = pendingId || null;
+  const isNew = !state.user;
+  document.getElementById('loginTitle').textContent = isNew ? 'Criar conta / Entrar' : 'Sua conta';
+  document.getElementById('loginSub').textContent = isNew
+    ? 'Use seu e-mail para salvar seu progresso e certificados em qualquer dispositivo.'
+    : 'Você já está logado como ' + state.user.name + '.';
+  document.getElementById('loginNameGroup').style.display = 'none';
+  document.getElementById('loginPhoneGroup').style.display = 'none';
+  document.getElementById('loginEmail').value = state.user ? state.user.email : '';
+  showScreen('screenLogin');
+}
+
+function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  if (!email || !email.includes('@')) { alert('Informe um e-mail válido.'); return; }
+
+  // Verifica se existe cadastro salvo
+  const existing = localStorage.getItem(storageKey(email));
+  const userInfo  = localStorage.getItem('pd_userinfo_' + email);
+
+  if (userInfo) {
+    // Login de usuário existente
+    state.user = JSON.parse(userInfo);
+    loadState(email);
+    localStorage.setItem('pd_last_email', email);
+    localStorage.setItem('pd_last_user', JSON.stringify(state.user));
+    updateUserBadge();
+    if (window._loginPending) { openPlayer(window._loginPending); }
+    else { showScreen('screenCatalog'); renderCatalog(); }
+  } else {
+    // Novo usuário — pede nome e telefone
+    document.getElementById('loginNameGroup').style.display = 'block';
+    document.getElementById('loginPhoneGroup').style.display = 'block';
+    document.getElementById('loginBtn').textContent = '✅ Criar conta e entrar';
+    document.getElementById('loginBtn').onclick = doRegisterAndLogin;
+  }
+}
+
+function doRegisterAndLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const name  = document.getElementById('loginName').value.trim();
+  const phone = document.getElementById('loginPhone').value.trim();
+  if (!name || name.length < 2)                    { alert('Informe seu nome completo.'); return; }
+  if (!phone || phone.replace(/\D/g,'').length < 10){ alert('Informe seu WhatsApp com DDD.'); return; }
+
+  state.user = { name, email, phone };
+  state.done = {}; state.certs = {};
+  localStorage.setItem('pd_userinfo_' + email, JSON.stringify(state.user));
+  localStorage.setItem('pd_last_email', email);
+  localStorage.setItem('pd_last_user', JSON.stringify(state.user));
+  saveState();
+
+  // Envia para planilha
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', SHEETS_URL, true);
+  xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+  xhr.send('nome='+encodeURIComponent(name)+'&email='+encodeURIComponent(email)+'&whatsapp='+encodeURIComponent(phone)+'&curso=Cadastro+Plataforma&pago=');
+
+  updateUserBadge();
+  if (window._loginPending) { openPlayer(window._loginPending); }
+  else { showScreen('screenCatalog'); renderCatalog(); }
+}
+
+function doLogout() {
+  localStorage.removeItem('pd_last_email');
+  localStorage.removeItem('pd_last_user');
+  state.user = null; state.done = {}; state.certs = {};
+  updateUserBadge();
+  showScreen('screenCatalog');
+  renderCatalog();
 }
 
 // ════════════════════════════════════════
@@ -764,10 +881,7 @@ function startCourse(id) {
   if (state.user) {
     openPlayer(id);
   } else {
-    pendingCourseId = id;
-    const course = COURSES.find(c => c.id === id);
-    document.getElementById('regCourseName').textContent = '📚 ' + course.title;
-    showScreen('screenRegister');
+    showLogin(id);
   }
 }
 
@@ -780,31 +894,6 @@ function fmtPhone(input) {
 
 // ── CONFIG ──
 const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwaBr6TNoarwBzE0-duKrMLHj2q96PzkSis6qN0XMTp8CqNJdr7CDrGqRXvfTCPjRVw/exec';
-
-function doRegister() {
-  const name  = document.getElementById('regName').value.trim();
-  const email = document.getElementById('regEmail').value.trim();
-  const phone = document.getElementById('regPhone').value.trim();
-  if (!name || name.length < 2)                      { alert('Por favor, informe seu nome completo.'); return; }
-  if (!email || !email.includes('@'))                 { alert('Por favor, informe um e-mail válido.'); return; }
-  if (!phone || phone.replace(/\D/g,'').length < 10) { alert('Por favor, informe seu WhatsApp com DDD.'); return; }
-
-  const curso = COURSES.find(c => c.id === pendingCourseId)?.title || '';
-
-  state.user = { name, email, phone };
-  saveState();
-  updateUserBadge();
-
-  // 1️⃣ Salva no Google Sheets
-  fetch(SHEETS_URL, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ nome: name, email, whatsapp: phone, curso })
-  }).catch(() => {});
-
-  openPlayer(pendingCourseId);
-}
 
 // ════════════════════════════════════════
 // PLAYER
@@ -1002,24 +1091,158 @@ function answerQuiz(questionId, selectedIdx, correctIdx) {
 // ════════════════════════════════════════
 // TELA DE PARABÉNS
 // ════════════════════════════════════════
+// Conteúdo aprendido por curso
+const COURSE_CONTENT = {
+  requisitos: 'Fundamentos de requisitos, tipos funcionais e não-funcionais, técnicas de elicitação (entrevistas, workshops, observação), User Stories, critérios de aceitação no formato BDD, diagrama de casos de uso e rastreabilidade.',
+  scrum: 'Framework Scrum, os 3 papéis (Product Owner, Scrum Master, Developers), as 4 cerimônias (Sprint Planning, Daily, Review, Retrospectiva), artefatos (Product Backlog, Sprint Backlog, Incremento) e Definition of Done.',
+  agil: 'Manifesto Ágil e seus 4 valores, comparativo Scrum vs Kanban, framework OKR (Objectives and Key Results), métricas ágeis como Velocity, Lead Time e Cycle Time, e gestão de times de alta performance.',
+  po: 'Papel do Product Owner no Scrum, diferenças entre PO, PM e Scrum Master, frameworks de priorização RICE e MoSCoW, refinamento de backlog, Planning Poker, Definition of Ready e definição de MVP.',
+  linkedin: 'Estratégia de headline para LinkedIn, formato CAR para experiências, construção de portfólio sem experiência formal, networking ativo e passivo, e otimização do perfil para aparecer em buscas de recrutadores.',
+  entrevista: 'Estratégia de mapeamento de vagas, método STAR para entrevistas comportamentais, resolução de case studies ao vivo, as 50 perguntas mais frequentes em tech, e técnicas de negociação salarial.',
+};
+
 function renderCongrats() {
   const course = COURSES.find(c => c.id === state.currentCourse);
-  const today = new Date().toLocaleDateString('pt-BR', {day:'2-digit',month:'long',year:'numeric'});
+  const today  = new Date().toLocaleDateString('pt-BR', {day:'2-digit', month:'long', year:'numeric'});
+  const userName = state.user ? state.user.name : 'Aluno';
+  const certId = 'PD-' + state.currentCourse.toUpperCase() + '-' + Date.now().toString(36).toUpperCase();
+  const content = COURSE_CONTENT[state.currentCourse] || '';
+
+  // Salva certificado no perfil
+  if (state.user) {
+    if (!state.certs) state.certs = {};
+    state.certs[state.currentCourse] = { title: course.title, date: today, certId, content };
+    saveState();
+  }
+
   document.getElementById('playerMain').innerHTML = `
     <div class="congrats-wrap">
       <div class="big-icon">🏆</div>
-      <h2>Parabéns, ${state.user ? state.user.name.split(' ')[0] : 'aluno'}!</h2>
-      <p>Você completou o treinamento <strong>${course.title}</strong> com sucesso. Continue aprendendo e aplique o conhecimento no mercado!</p>
-      <div class="cert-card">
+      <h2>Parabéns, ${userName.split(' ')[0]}!</h2>
+      <p>Você concluiu o treinamento <strong>${course.title}</strong> com sucesso. Seu certificado está pronto!</p>
+      <div class="cert-card" id="certPreview" style="text-align:left">
         <div class="cert-badge">🎓</div>
-        <div class="cert-title">// CERTIFICADO DE CONCLUSÃO</div>
-        <div class="cert-name">${state.user ? state.user.name : 'Aluno'}</div>
-        <div class="cert-course">Concluiu: ${course.title}</div>
-        <div class="cert-date">Planeta Digital · ${today}</div>
+        <div class="cert-title">// CERTIFICADO DE PARTICIPAÇÃO</div>
+        <div style="font-size:0.78rem;color:var(--muted);margin-bottom:0.5rem;font-family:'Space Mono',monospace">A Planeta Digital certifica que</div>
+        <div class="cert-name">${userName}</div>
+        <div class="cert-course">concluiu com êxito o treinamento</div>
+        <div style="font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:800;color:var(--accent);margin:0.4rem 0 0.75rem">${course.title}</div>
+        <div style="font-size:0.78rem;color:var(--muted);line-height:1.6;margin-bottom:1rem"><strong style="color:var(--text)">Conteúdo abordado:</strong> ${content}</div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:0.5rem">
+          <div>
+            <div class="cert-date">Data de conclusão: ${today}</div>
+            <div class="cert-date" style="margin-top:0.2rem">Código: ${certId}</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-family:'Syne',sans-serif;font-size:0.7rem;font-weight:800;color:var(--accent)">Planeta Digital</div>
+            <div style="font-size:0.65rem;color:var(--muted)">planetadigital.com.br</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;margin-bottom:1rem">
+        <button class="complete-btn" onclick="downloadCert('${state.currentCourse}')">⬇️ Baixar Certificado PDF</button>
+        <button class="btn-lesson-nav" onclick="showCertificados()">🏆 Ver todos meus certificados</button>
       </div>
       <button class="btn-lesson-nav primary" onclick="goHome()" style="margin:0 auto">← Ver outros treinamentos</button>
     </div>`;
   renderCatalog();
+}
+
+// ════════════════════════════════════════
+// CERTIFICADOS
+// ════════════════════════════════════════
+function showCertificados() {
+  if (!state.user) { showLogin(null); return; }
+  const grid = document.getElementById('certsGrid');
+  const certs = state.certs || {};
+  const keys = Object.keys(certs);
+  if (keys.length === 0) {
+    grid.innerHTML = '<div style="color:var(--muted);font-size:0.9rem;grid-column:1/-1;text-align:center;padding:3rem 0">Você ainda não concluiu nenhum treinamento.<br>Complete um curso para receber seu certificado! 🎓</div>';
+  } else {
+    grid.innerHTML = keys.map(id => {
+      const c = certs[id];
+      return `
+      <div style="background:var(--surface);border:1px solid rgba(0,229,255,0.15);border-radius:12px;padding:1.5rem;position:relative;overflow:hidden">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2))"></div>
+        <div style="font-size:1.8rem;margin-bottom:0.75rem">🎓</div>
+        <div style="font-family:'Space Mono',monospace;font-size:0.6rem;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:0.4rem">Certificado</div>
+        <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;margin-bottom:0.3rem">${c.title}</div>
+        <div style="font-size:0.75rem;color:var(--muted);margin-bottom:1.25rem">Concluído em ${c.date} · ${c.certId}</div>
+        <button onclick="downloadCert('${id}')" style="width:100%;background:rgba(0,229,255,0.08);border:1px solid rgba(0,229,255,0.2);color:var(--accent);font-family:'Syne',sans-serif;font-weight:700;padding:0.65rem;border-radius:8px;cursor:pointer;font-size:0.85rem;transition:all .2s">⬇️ Baixar PDF</button>
+      </div>`;
+    }).join('');
+  }
+  showScreen('screenCertificados');
+}
+
+function downloadCert(courseId) {
+  const course = COURSES.find(c => c.id === courseId);
+  const userName = state.user ? state.user.name : 'Aluno';
+  const certData = state.certs && state.certs[courseId];
+  const today = certData ? certData.date : new Date().toLocaleDateString('pt-BR', {day:'2-digit',month:'long',year:'numeric'});
+  const certId = certData ? certData.certId : 'PD-' + courseId.toUpperCase();
+  const content = COURSE_CONTENT[courseId] || '';
+
+  const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
+<title>Certificado — ${course.title}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Inter:wght@300;400;600&family=Space+Mono&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#fff; font-family:'Inter',sans-serif; display:flex; align-items:center; justify-content:center; min-height:100vh; }
+  .cert { width:794px; min-height:560px; background:#fff; border:2px solid #e2e8f0; border-radius:16px; padding:3rem; position:relative; overflow:hidden; }
+  .cert::before { content:''; position:absolute; top:0;left:0;right:0; height:6px; background:linear-gradient(90deg,#00e5ff,#7c3aed); }
+  .cert::after { content:''; position:absolute; bottom:0;left:0;right:0; height:3px; background:linear-gradient(90deg,#7c3aed,#10b981); }
+  .header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:2rem; }
+  .logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.4rem; color:#00e5ff; }
+  .logo span { color:#0f172a; }
+  .cert-type { font-family:'Space Mono',monospace; font-size:0.65rem; color:#64748b; text-transform:uppercase; letter-spacing:2px; text-align:right; }
+  .divider { height:1px; background:linear-gradient(90deg,#00e5ff22,#7c3aed22); margin:1.5rem 0; }
+  .certifies { font-size:0.85rem; color:#64748b; margin-bottom:0.5rem; }
+  .person { font-family:'Syne',sans-serif; font-size:2.2rem; font-weight:800; color:#0f172a; margin-bottom:0.5rem; letter-spacing:-1px; }
+  .completed { font-size:0.85rem; color:#64748b; margin-bottom:0.25rem; }
+  .course { font-family:'Syne',sans-serif; font-size:1.35rem; font-weight:800; color:#7c3aed; margin-bottom:1.5rem; }
+  .content-label { font-size:0.75rem; font-weight:600; color:#0f172a; margin-bottom:0.4rem; text-transform:uppercase; letter-spacing:0.5px; }
+  .content-text { font-size:0.8rem; color:#475569; line-height:1.65; margin-bottom:2rem; }
+  .footer { display:flex; justify-content:space-between; align-items:flex-end; }
+  .signature { text-align:center; }
+  .sig-line { width:160px; height:1px; background:#0f172a; margin-bottom:0.4rem; }
+  .sig-name { font-family:'Syne',sans-serif; font-size:0.8rem; font-weight:700; color:#0f172a; }
+  .sig-title { font-size:0.68rem; color:#64748b; }
+  .cert-info { text-align:right; font-family:'Space Mono',monospace; font-size:0.62rem; color:#94a3b8; line-height:1.8; }
+  .seal { width:70px; height:70px; border-radius:50%; background:linear-gradient(135deg,#00e5ff,#7c3aed); display:flex; align-items:center; justify-content:center; font-size:2rem; box-shadow:0 4px 20px rgba(0,229,255,0.3); }
+</style></head><body>
+<div class="cert">
+  <div class="header">
+    <div><div class="logo">Planeta<span>Digital</span></div><div style="font-size:0.72rem;color:#94a3b8;margin-top:0.3rem">planetadigital.com.br</div></div>
+    <div class="cert-type">Certificado de<br>Participação</div>
+  </div>
+  <div class="divider"></div>
+  <div class="certifies">A Planeta Digital certifica que</div>
+  <div class="person">${userName}</div>
+  <div class="completed">concluiu com êxito o treinamento</div>
+  <div class="course">${course.title}</div>
+  <div class="content-label">Conteúdo abordado</div>
+  <div class="content-text">${content}</div>
+  <div class="footer">
+    <div class="signature">
+      <div class="sig-line"></div>
+      <div class="sig-name">Planeta Digital</div>
+      <div class="sig-title">Plataforma de Educação em Tecnologia</div>
+    </div>
+    <div class="seal">🎓</div>
+    <div class="cert-info">Data: ${today}<br>Código: ${certId}<br>Válido em planetadigital.com.br</div>
+  </div>
+</div>
+<script>window.onload = () => { window.print(); }<\/script>
+</body></html>`;
+
+  const blob = new Blob([html], {type:'text/html'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = 'Certificado_PlanetaDigital_' + courseId + '.html';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 // ════════════════════════════════════════
